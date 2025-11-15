@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>UnFinished Business – Employment Application</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <h1>UnFinished Business Employment Application</h1>
+  </header>
+
+  <main>
+    <div id="global-messages" aria-live="polite" class="sr-only"></div>
+
+    <section class="form-container">
+      <form id="applicationForm" action="/submit" method="post" novalidate>
+        <div class="progress">
+          <span class="progress-step active" data-step="1">1. Applicant Info</span>
+          <span class="progress-step" data-step="2">2. Availability</span>
+          <span class="progress-step" data-step="3">3. Education & Work</span>
+          <span class="progress-step" data-step="4">4. References</span>
+          <span class="progress-step" data-step="5">5. Acknowledgment</span>
+        </div>
+
+        <!-- STEP 1: Applicant Information & Medical -->
+        <fieldset class="form-step active" data-step="1">
+          <legend>Applicant Information</legend>
+
+          <div class="field-group">
+            <label for="firstName">
+              First Name <span class="required">*</span>
+            </label>
+            <input
+              id="firstName"
+              name="firstName"
+              type="text"
+              maxlength="64"
+              required
+              value="<%= data.firstName || '' %>"
+            />
+            <% if (errors.firstName) { %>
+              <p class="error"><%= errors.firstName %></p>
+            <% } %>
+          </div>
+
+          <div class="field-group">
+            <label for="lastName">
+              Last Name <span class="required">*</span>
+            </label>
+            <input
+              id="lastName"
+              name="lastName"
+              type="text"
+              maxlength="64"
+              required
+              value="<%= data.lastName || '' %>"
+            />
+            <% if (errors.lastName) { %>
+              <p class="error"><%= errors.lastName %></p>
+            <% } %>
+          </div>
+
+          <div class="field-group">
+            <label for="address">Address</label>
+            <textarea
+              id="address"
+              name="address"
+              maxlength="100"
+              rows="2"
+            ><%= data.address || '' %></textarea>
+            <% if (errors.address) { %>
+              <p class="error"><%= errors.address %></p>
+            <% } %>
+          </div>
+
+          <div class="field-group two-column">
+            <div>
+              <label for="phone">
+                Phone <span class="required">*</span>
+              </label>
+              <input
+                id="phone"
+                name="phone"
+                type="text"
+                placeholder="(555)555-5555"
+                pattern="^\\(\\d{3}\\)\\d{3}-\\d{4}$"
+                required
+                value="<%= data.phone || '' %>"
+              />
+              <% if (errors.phone) { %>
+                <p class="error"><%= errors.phone %></p>
+              <% } %>
+            </div>
+            <div>
+              <label for="email">
+                Email <span class="required">*</span>
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                maxlength="64"
+                required
+                value="<%= data.email || '' %>"
+              />
+              <% if (errors.email) { %>
+                <p class="error"><%= errors.email %></p>
+              <% } %>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="positionApplied">
+              Position Applied For <span class="required">*</span>
+            </label>
+            <select id="positionApplied" name="positionApplied" required>
+              <option value="">Select a position</option>
+              <option value="barista" <%= data.positionApplied === "barista" ? "selected" : "" %>>Barista</option>
+              <option value="cashier" <%= data.positionApplied === "cashier" ? "selected" : "" %>>Cashier</option>
+              <option value="manager" <%= data.positionApplied === "manager" ? "selected" : "" %>>Manager</option>
+              <option value="intern" <%= data.positionApplied === "intern" ? "selected" : "" %>>Intern</option>
+            </select>
+            <% if (errors.positionApplied) { %>
+              <p class="error"><%= errors.positionApplied %></p>
+            <% } %>
+          </div>
+
+          <fieldset class="sub-section">
+            <legend>Ability to Perform Job (Example)</legend>
+            <p class="hint">
+              In a real deployment, this should be phrased in an ADA-safe way (can you perform essential job functions with/without accommodation).
+            </p>
+            <div class="checkbox-group">
+              <label>
+                <input
+                  type="checkbox"
+                  name="medicalCanPerform"
+                  value="yes"
+                  <%= data.medicalCanPerform === "yes" ? "checked" : "" %>
+                />
+                I can perform the essential functions of this job with or without reasonable accommodation.
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  name="medicalNeedsAccommodation"
+                  value="yes"
+                  <%= data.medicalNeedsAccommodation === "yes" ? "checked" : "" %>
+                />
+                I may need reasonable accommodations.
+              </label>
+            </div>
+          </fieldset>
+
+          <div class="step-controls">
+            <button type="button" class="btn next-step">Next</button>
+          </div>
+        </fieldset>
+
+        <!-- STEP 2: Availability -->
+        <fieldset class="form-step" data-step="2">
+          <legend>Availability</legend>
+
+          <div class="field-group">
+            <p>Days Available to Work <span class="required">*</span></p>
+          <% var days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]; %>
+            <div class="checkbox-group" id="availableDaysGroup">
+              <% days.forEach(function(day) { %>
+                <label>
+                  <input
+                    type="checkbox"
+                    name="availableDays"
+                    value="<%= day %>"
+                    <%= (Array.isArray(data.availableDays) && data.availableDays.includes(day)) ||
+                        data.availableDays === day
+                        ? "checked"
+                        : "" %>
+                  />
+                  <%= day %>
+                </label>
+              <% }); %>
+            </div>
+            <button type="button" id="selectAllDays" class="link-button">All Days</button>
+            <% if (errors.availableDays) { %>
+              <p class="error"><%= errors.availableDays %></p>
+            <% } %>
+          </div>
+
+          <div class="field-group">
+            <label for="employmentType">
+              Employment Desired <span class="required">*</span>
+            </label>
+            <select id="employmentType" name="employmentType" required>
+              <option value="">Select one</option>
+              <option value="full-time" <%= data.employmentType === "full-time" ? "selected" : "" %>>Full-time</option>
+              <option value="part-time" <%= data.employmentType === "part-time" ? "selected" : "" %>>Part-time</option>
+              <option value="seasonal" <%= data.employmentType === "seasonal" ? "selected" : "" %>>Seasonal</option>
+              <option value="intern" <%= data.employmentType === "intern" ? "selected" : "" %>>Intern</option>
+            </select>
+            <% if (errors.employmentType) { %>
+              <p class="error"><%= errors.employmentType %></p>
+            <% } %>
+          </div>
+
+          <div class="field-group">
+            <label for="startDate">
+              Date Available to Start <span class="required">*</span>
+            </label>
+            <input
+              id="startDate"
+              name="startDate"
+              type="date"
+              min="<%= futureMinDate %>"
+              value="<%= data.startDate || '' %>"
+              required
+            />
+            <% if (errors.startDate) { %>
+              <p class="error"><%= errors.startDate %></p>
+            <% } %>
+            <p class="hint">Must be a future date, not today.</p>
+          </div>
+
+          <div class="step-controls">
+            <button type="button" class="btn secondary prev-step">Back</button>
+            <button type="button" class="btn next-step">Next</button>
+          </div>
+        </fieldset>
+
+        <!-- STEP 3: Education & Work -->
+        <fieldset class="form-step" data-step="3">
+          <legend>Education & Work Experience</legend>
+
+          <fieldset class="sub-section">
+            <legend>Education</legend>
+            <div class="field-group">
+              <label for="schoolName">School Name</label>
+              <input
+                id="schoolName"
+                name="schoolName"
+                type="text"
+                maxlength="50"
+                value="<%= data.schoolName || '' %>"
+              />
+              <% if (errors.schoolName) { %>
+                <p class="error"><%= errors.schoolName %></p>
+              <% } %>
+            </div>
+
+            <div class="field-group">
+              <label for="schoolCityState">City / State</label>
+              <input
+                id="schoolCityState"
+                name="schoolCityState"
+                type="text"
+                maxlength="50"
+                value="<%= data.schoolCityState || '' %>"
+              />
+              <% if (errors.schoolCityState) { %>
+                <p class="error"><%= errors.schoolCityState %></p>
+              <% } %>
+            </div>
+
+            <div class="field-group">
+              <label for="educationLevel">Level of Education</label>
+              <select id="educationLevel" name="educationLevel">
+                <option value="">Select level</option>
+                <option value="hs" <%= data.educationLevel === "hs" ? "selected" : "" %>>High School Diploma / GED</option>
+                <option value="associate" <%= data.educationLevel === "associate" ? "selected" : "" %>>Associate Degree</option>
+                <option value="bachelor" <%= data.educationLevel === "bachelor" ? "selected" : "" %>>Bachelor's Degree</option>
+                <option value="master" <%= data.educationLevel === "master" ? "selected" : "" %>>Master's Degree</option>
+                <option value="other" <%= data.educationLevel === "other" ? "selected" : "" %>>Other</option>
+              </select>
+            </div>
+
+            <button type="button" id="addEducation" class="link-button">
+              + Add More Education
+            </button>
+            <p class="hint">For the assignment, one block is enough; you can clone this for extra entries.</p>
+          </fieldset>
+
+          <fieldset class="sub-section">
+            <legend>Most Recent Work Experience</legend>
+
+            <div class="field-group">
+              <label for="employerName">Employer</label>
+              <input
+                id="employerName"
+                name="employerName"
+                type="text"
+                maxlength="50"
+                value="<%= data.employerName || '' %>"
+              />
+              <% if (errors.employerName) { %>
+                <p class="error"><%= errors.employerName %></p>
+              <% } %>
+            </div>
+
+            <div class="field-group">
+              <label for="workAddress">Address</label>
+              <textarea
+                id="workAddress"
+                name="workAddress"
+                maxlength="100"
+                rows="2"
+              ><%= data.workAddress || '' %></textarea>
+              <% if (errors.workAddress) { %>
+                <p class="error"><%= errors.workAddress %></p>
+              <% } %>
+            </div>
+
+            <div class="field-group two-column">
+              <div>
+                <label for="jobTitle">Job Title</label>
+                <input
+                  id="jobTitle"
+                  name="jobTitle"
+                  type="text"
+                  maxlength="50"
+                  value="<%= data.jobTitle || '' %>"
+                />
+                <% if (errors.jobTitle) { %>
+                  <p class="error"><%= errors.jobTitle %></p>
+                <% } %>
+              </div>
+              <div>
+                <label for="workSupervisor">Supervisor</label>
+                <input
+                  id="workSupervisor"
+                  name="workSupervisor"
+                  type="text"
+                  maxlength="50"
+                  value="<%= data.workSupervisor || '' %>"
+                />
+              </div>
+            </div>
+
+            <div class="field-group two-column">
+              <div>
+                <label for="workStartDate">Start Date</label>
+                <input
+                  id="workStartDate"
+                  name="workStartDate"
+                  type="date"
+                  min="1955-01-01"
+                  max="<%= todayISO %>"
+                  value="<%= data.workStartDate || '' %>"
+                />
+                <% if (errors.workStartDate) { %>
+                  <p class="error"><%= errors.workStartDate %></p>
+                <% } %>
+              </div>
+              <div>
+                <label for="workEndDate">End Date</label>
+                <input
+                  id="workEndDate"
+                  name="workEndDate"
+                  type="date"
+                  min="1955-01-01"
+                  max="<%= todayISO %>"
+                  value="<%= data.workEndDate || '' %>"
+                />
+                <% if (errors.workEndDate) { %>
+                  <p class="error"><%= errors.workEndDate %></p>
+                <% } %>
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label for="jobDuties">Job Duties (max 300 chars)</label>
+              <textarea
+                id="jobDuties"
+                name="jobDuties"
+                maxlength="300"
+                rows="4"
+              ><%= data.jobDuties || '' %></textarea>
+              <% if (errors.jobDuties) { %>
+                <p class="error"><%= errors.jobDuties %></p>
+              <% } %>
+            </div>
+
+            <button type="button" id="addWorkExperience" class="link-button">
+              + Add More Work Experience
+            </button>
+          </fieldset>
+
+          <fieldset class="sub-section">
+            <legend>Additional Skills & Experience</legend>
+            <div class="field-group">
+              <label for="skills">Skills and Experience (max 200 chars)</label>
+              <textarea
+                id="skills"
+                name="skills"
+                maxlength="200"
+                rows="3"
+              ><%= data.skills || '' %></textarea>
+              <% if (errors.skills) { %>
+                <p class="error"><%= errors.skills %></p>
+              <% } %>
+            </div>
+          </fieldset>
+
+          <div class="step-controls">
+            <button type="button" class="btn secondary prev-step">Back</button>
+            <button type="button" class="btn next-step">Next</button>
+          </div>
+        </fieldset>
+
+        <!-- STEP 4: References -->
+        <fieldset class="form-step" data-step="4">
+          <legend>References</legend>
+
+          <div class="field-group">
+            <label for="refName">Reference Name</label>
+            <input
+              id="refName"
+              name="refName"
+              type="text"
+              maxlength="50"
+              value="<%= data.refName || '' %>"
+            />
+            <% if (errors.refName) { %>
+              <p class="error"><%= errors.refName %></p>
+            <% } %>
+          </div>
+
+          <div class="field-group">
+            <label for="refTitle">Title</label>
+            <input
+              id="refTitle"
+              name="refTitle"
+              type="text"
+              maxlength="50"
+              value="<%= data.refTitle || '' %>"
+            />
+          </div>
+
+          <div class="field-group">
+            <label for="refCompany">Company</label>
+            <input
+              id="refCompany"
+              name="refCompany"
+              type="text"
+              maxlength="50"
+              value="<%= data.refCompany || '' %>"
+            />
+            <% if (errors.refCompany) { %>
+              <p class="error"><%= errors.refCompany %></p>
+            <% } %>
+          </div>
+
+          <div class="field-group">
+            <label for="refPhone">Phone</label>
+            <input
+              id="refPhone"
+              name="refPhone"
+              type="text"
+              placeholder="(555)555-5555"
+              pattern="^\\(\\d{3}\\)\\d{3}-\\d{4}$"
+              value="<%= data.refPhone || '' %>"
+            />
+            <% if (errors.refPhone) { %>
+              <p class="error"><%= errors.refPhone %></p>
+            <% } %>
+          </div>
+
+          <div class="field-group">
+            <label for="refEmail">Email</label>
+            <input
+              id="refEmail"
+              name="refEmail"
+              type="email"
+              maxlength="64"
+              value="<%= data.refEmail || '' %>"
+            />
+            <% if (errors.refEmail) { %>
+              <p class="error"><%= errors.refEmail %></p>
+            <% } %>
+          </div>
+
+          <button type="button" id="addReference" class="link-button">
+            + Add More References
+          </button>
+
+          <div class="step-controls">
+            <button type="button" class="btn secondary prev-step">Back</button>
+            <button type="button" class="btn next-step">Next</button>
+          </div>
+        </fieldset>
+
+        <!-- STEP 5: Acknowledgment -->
+        <fieldset class="form-step" data-step="5">
+          <legend>Application Acknowledgment</legend>
+
+          <div class="acknowledgment-block">
+            <p><strong>PLEASE READ AND SIGN</strong></p>
+            <p><strong>JOB PAPER</strong></p>
+            <p>IF I WANT UNFINISHED BUSINESS TO LOOK AT MY JOB PAPER, I AGREE TO THIS STUFF:</p>
+            <ul>
+              <li>GETTING THE JOB DOESN’T MEAN I GET TO KEEP IT FOREVER. EVEN IF THEY GIVE ME A BOOK WITH RULES, THAT DOESN’T MEAN I’M REALLY HIRED.</li>
+              <li>I CAN QUIT ANYTIME I WANT, AND THE COMPANY CAN ALSO FIRE ME ANYTIME. THE ONLY WAY THIS CHANGES IS IF THE BOSS WRITES AND SIGNS A PAPER. THE COMPANY CAN ALSO CHANGE RULES AND BENEFITS AFTER I START WORKING.</li>
+              <li>I SAY IT’S OKAY FOR UNFINISHED TO CHECK THE THINGS I WROTE ON THIS PAPER. IF I LIED OR LEFT OUT SOMETHING BIG, THEY CAN FIRE ME. THEY CAN ALSO CALL THE PEOPLE I LISTED. IF ANYTHING BAD HAPPENS BECAUSE THEY CALLED THEM, IT’S NOT THE COMPANY’S FAULT.</li>
+              <li>THE COMPANY HAS RULES ABOUT NO DRUGS OR ALCOHOL. I MAY HAVE TO TAKE A TEST BEFORE WORKING AND MIGHT HAVE TO DO A HEALTH CHECK TO MAKE SURE I CAN DO THE JOB.</li>
+              <li>UNFINISHED BUSINESS CAN DO A BACKGROUND CHECK ON ME. IF I WANT TO KNOW WHY, I CAN ASK IN WRITING AND THEY HAVE TO TELL ME.</li>
+              <li>THE FIRST 60 DAYS ARE A “TRY-OUT” TO SEE IF I FIT IN. I CAN STILL QUIT OR GET FIRED DURING THIS TIME.</li>
+            </ul>
+            <p>UNFINISHED BUSINESS GIVES EVERYONE A FAIR CHANCE. THANKS FOR SIGNING!</p>
+          </div>
+
+          <div class="field-group">
+            <label>
+              <input
+                type="checkbox"
+                name="acknowledge"
+                value="yes"
+                <%= data.acknowledge === "yes" ? "checked" : "" %>
+              />
+              I have read and agree to the above.
+            </label>
+            <% if (errors.acknowledge) { %>
+              <p class="error"><%= errors.acknowledge %></p>
+            <% } %>
+          </div>
+
+          <div class="field-group two-column">
+            <div>
+              <label for="signature">Sign Your Name <span class="required">*</span></label>
+              <input
+                id="signature"
+                name="signature"
+                type="text"
+                value="<%= data.signature || '' %>"
+                required
+              />
+              <% if (errors.signature) { %>
+                <p class="error"><%= errors.signature %></p>
+              <% } %>
+            </div>
+            <div>
+              <label for="signatureDate">Date <span class="required">*</span></label>
+              <input
+                id="signatureDate"
+                name="signatureDate"
+                type="date"
+                max="<%= todayISO %>"
+                value="<%= data.signatureDate || '' %>"
+                required
+              />
+              <% if (errors.signatureDate) { %>
+                <p class="error"><%= errors.signatureDate %></p>
+              <% } %>
+            </div>
+          </div>
+
+          <div class="step-controls">
+            <button type="button" class="btn secondary prev-step">Back</button>
+            <button type="submit" class="btn primary">Submit Application</button>
+          </div>
+        </fieldset>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    window.APP_CONFIG = {
+      todayISO: "<%= todayISO %>",
+      futureMinDate: "<%= futureMinDate %>"
+    };
+  </script>
+  <script src="/js/form.js"></script>
+</body>
+</html>

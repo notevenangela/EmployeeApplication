@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>UnFinished Business – Employment Application</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <h1>UnFinished Business Employment Application</h1>
+  </header>
+
+  <main>
+    <div id="global-messages" aria-live="polite" class="sr-only"></div>
+    <%- body %>
+  </main>
+
+  <script>
+    window.APP_CONFIG = {
+      todayISO: "<%= todayISO || '' %>",
+      futureMinDate: "<%= futureMinDate || '' %>"
+    };
+  </script>
+  <script src="/js/form.js"></script>
+</body>
+</html>
