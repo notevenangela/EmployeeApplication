@@ -29,6 +29,23 @@
           <legend>Applicant Information</legend>
 
           <div class="field-group">
+            <label for="applicationDate">
+              Application Date <span class="required">*</span>
+            </label>
+            <input
+              id="applicationDate"
+              name="applicationDate"
+              type="date"
+              max="<%= todayISO %>"
+              value="<%= data.applicationDate || todayISO %>"
+              required
+            />
+            <% if (errors.applicationDate) { %>
+              <p class="error"><%= errors.applicationDate %></p>
+            <% } %>
+          </div>
+
+          <div class="field-group">
             <label for="firstName">
               First Name <span class="required">*</span>
             </label>
@@ -42,6 +59,20 @@
             />
             <% if (errors.firstName) { %>
               <p class="error"><%= errors.firstName %></p>
+            <% } %>
+          </div>
+
+          <div class="field-group">
+            <label for="middleName">Middle Name</label>
+            <input
+              id="middleName"
+              name="middleName"
+              type="text"
+              maxlength="64"
+              value="<%= data.middleName || '' %>"
+            />
+            <% if (errors.middleName) { %>
+              <p class="error"><%= errors.middleName %></p>
             <% } %>
           </div>
 
@@ -63,15 +94,124 @@
           </div>
 
           <div class="field-group">
-            <label for="address">Address</label>
-            <textarea
+            <label for="address">Street Address</label>
+            <input
               id="address"
               name="address"
+              type="text"
               maxlength="100"
-              rows="2"
-            ><%= data.address || '' %></textarea>
+              value="<%= data.address || '' %>"
+            />
             <% if (errors.address) { %>
               <p class="error"><%= errors.address %></p>
+            <% } %>
+          </div>
+
+          <div class="field-group two-column">
+            <div>
+              <label for="city">City</label>
+              <input
+                id="city"
+                name="city"
+                type="text"
+                maxlength="50"
+                value="<%= data.city || '' %>"
+              />
+              <% if (errors.city) { %>
+                <p class="error"><%= errors.city %></p>
+              <% } %>
+            </div>
+            <div>
+              <label for="state">State</label>
+              <select id="state" name="state">
+                <option value="">Select State</option>
+                <option value="AL" <%= data.state === "AL" ? "selected" : "" %>>Alabama</option>
+                <option value="AK" <%= data.state === "AK" ? "selected" : "" %>>Alaska</option>
+                <option value="AZ" <%= data.state === "AZ" ? "selected" : "" %>>Arizona</option>
+                <option value="AR" <%= data.state === "AR" ? "selected" : "" %>>Arkansas</option>
+                <option value="CA" <%= data.state === "CA" ? "selected" : "" %>>California</option>
+                <option value="CO" <%= data.state === "CO" ? "selected" : "" %>>Colorado</option>
+                <option value="CT" <%= data.state === "CT" ? "selected" : "" %>>Connecticut</option>
+                <option value="DE" <%= data.state === "DE" ? "selected" : "" %>>Delaware</option>
+                <option value="FL" <%= data.state === "FL" ? "selected" : "" %>>Florida</option>
+                <option value="GA" <%= data.state === "GA" ? "selected" : "" %>>Georgia</option>
+                <option value="HI" <%= data.state === "HI" ? "selected" : "" %>>Hawaii</option>
+                <option value="ID" <%= data.state === "ID" ? "selected" : "" %>>Idaho</option>
+                <option value="IL" <%= data.state === "IL" ? "selected" : "" %>>Illinois</option>
+                <option value="IN" <%= data.state === "IN" ? "selected" : "" %>>Indiana</option>
+                <option value="IA" <%= data.state === "IA" ? "selected" : "" %>>Iowa</option>
+                <option value="KS" <%= data.state === "KS" ? "selected" : "" %>>Kansas</option>
+                <option value="KY" <%= data.state === "KY" ? "selected" : "" %>>Kentucky</option>
+                <option value="LA" <%= data.state === "LA" ? "selected" : "" %>>Louisiana</option>
+                <option value="ME" <%= data.state === "ME" ? "selected" : "" %>>Maine</option>
+                <option value="MD" <%= data.state === "MD" ? "selected" : "" %>>Maryland</option>
+                <option value="MA" <%= data.state === "MA" ? "selected" : "" %>>Massachusetts</option>
+                <option value="MI" <%= data.state === "MI" ? "selected" : "" %>>Michigan</option>
+                <option value="MN" <%= data.state === "MN" ? "selected" : "" %>>Minnesota</option>
+                <option value="MS" <%= data.state === "MS" ? "selected" : "" %>>Mississippi</option>
+                <option value="MO" <%= data.state === "MO" ? "selected" : "" %>>Missouri</option>
+                <option value="MT" <%= data.state === "MT" ? "selected" : "" %>>Montana</option>
+                <option value="NE" <%= data.state === "NE" ? "selected" : "" %>>Nebraska</option>
+                <option value="NV" <%= data.state === "NV" ? "selected" : "" %>>Nevada</option>
+                <option value="NH" <%= data.state === "NH" ? "selected" : "" %>>New Hampshire</option>
+                <option value="NJ" <%= data.state === "NJ" ? "selected" : "" %>>New Jersey</option>
+                <option value="NM" <%= data.state === "NM" ? "selected" : "" %>>New Mexico</option>
+                <option value="NY" <%= data.state === "NY" ? "selected" : "" %>>New York</option>
+                <option value="NC" <%= data.state === "NC" ? "selected" : "" %>>North Carolina</option>
+                <option value="ND" <%= data.state === "ND" ? "selected" : "" %>>North Dakota</option>
+                <option value="OH" <%= data.state === "OH" ? "selected" : "" %>>Ohio</option>
+                <option value="OK" <%= data.state === "OK" ? "selected" : "" %>>Oklahoma</option>
+                <option value="OR" <%= data.state === "OR" ? "selected" : "" %>>Oregon</option>
+                <option value="PA" <%= data.state === "PA" ? "selected" : "" %>>Pennsylvania</option>
+                <option value="RI" <%= data.state === "RI" ? "selected" : "" %>>Rhode Island</option>
+                <option value="SC" <%= data.state === "SC" ? "selected" : "" %>>South Carolina</option>
+                <option value="SD" <%= data.state === "SD" ? "selected" : "" %>>South Dakota</option>
+                <option value="TN" <%= data.state === "TN" ? "selected" : "" %>>Tennessee</option>
+                <option value="TX" <%= data.state === "TX" ? "selected" : "" %>>Texas</option>
+                <option value="UT" <%= data.state === "UT" ? "selected" : "" %>>Utah</option>
+                <option value="VT" <%= data.state === "VT" ? "selected" : "" %>>Vermont</option>
+                <option value="VA" <%= data.state === "VA" ? "selected" : "" %>>Virginia</option>
+                <option value="WA" <%= data.state === "WA" ? "selected" : "" %>>Washington</option>
+                <option value="WV" <%= data.state === "WV" ? "selected" : "" %>>West Virginia</option>
+                <option value="WI" <%= data.state === "WI" ? "selected" : "" %>>Wisconsin</option>
+                <option value="WY" <%= data.state === "WY" ? "selected" : "" %>>Wyoming</option>
+              </select>
+              <% if (errors.state) { %>
+                <p class="error"><%= errors.state %></p>
+              <% } %>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="zipCode">ZIP Code</label>
+            <input
+              id="zipCode"
+              name="zipCode"
+              type="text"
+              pattern="\d{5}(-\d{4})?"
+              placeholder="12345 or 12345-6789"
+              maxlength="10"
+              value="<%= data.zipCode || '' %>"
+            />
+            <% if (errors.zipCode) { %>
+              <p class="error"><%= errors.zipCode %></p>
+            <% } %>
+          </div>
+
+          <div class="field-group">
+            <label for="yearsAtAddress">How long have you lived at your current address? (years)</label>
+            <input
+              id="yearsAtAddress"
+              name="yearsAtAddress"
+              type="number"
+              min="0"
+              max="100"
+              step="0.5"
+              placeholder="2.5"
+              value="<%= data.yearsAtAddress || '' %>"
+            />
+            <% if (errors.yearsAtAddress) { %>
+              <p class="error"><%= errors.yearsAtAddress %></p>
             <% } %>
           </div>
 
@@ -112,6 +252,52 @@
           </div>
 
           <div class="field-group">
+            <p>Are you at least 18 years old? <span class="required">*</span></p>
+            <div class="radio-group">
+              <label>
+                <input
+                  type="radio"
+                  name="ageVerification"
+                  value="yes"
+                  <%= data.ageVerification === "yes" ? "checked" : "" %>
+                  required
+                />
+                Yes
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="ageVerification"
+                  value="no"
+                  <%= data.ageVerification === "no" ? "checked" : "" %>
+                  required
+                />
+                No
+              </label>
+            </div>
+            <% if (errors.ageVerification) { %>
+              <p class="error"><%= errors.ageVerification %></p>
+            <% } %>
+          </div>
+
+          <div class="field-group">
+            <label for="desiredSalary">Desired Salary (per hour)</label>
+            <input
+              id="desiredSalary"
+              name="desiredSalary"
+              type="number"
+              min="7.25"
+              max="100"
+              step="0.25"
+              placeholder="15.00"
+              value="<%= data.desiredSalary || '' %>"
+            />
+            <% if (errors.desiredSalary) { %>
+              <p class="error"><%= errors.desiredSalary %></p>
+            <% } %>
+          </div>
+
+          <div class="field-group">
             <label for="positionApplied">
               Position Applied For <span class="required">*</span>
             </label>
@@ -126,6 +312,66 @@
               <p class="error"><%= errors.positionApplied %></p>
             <% } %>
           </div>
+
+          <fieldset class="sub-section">
+            <legend>Employment Eligibility</legend>
+            <p>Are you legally authorized to work in the United States? <span class="required">*</span></p>
+            <div class="radio-group">
+              <label>
+                <input
+                  type="radio"
+                  name="workAuthorized"
+                  value="yes"
+                  <%= data.workAuthorized === "yes" ? "checked" : "" %>
+                  required
+                />
+                Yes
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="workAuthorized"
+                  value="no"
+                  <%= data.workAuthorized === "no" ? "checked" : "" %>
+                  required
+                />
+                No
+              </label>
+            </div>
+            <% if (errors.workAuthorized) { %>
+              <p class="error"><%= errors.workAuthorized %></p>
+            <% } %>
+          </fieldset>
+
+          <fieldset class="sub-section">
+            <legend>Previous Employment</legend>
+            <p>Have you previously worked for or volunteered with UnFinished Business? <span class="required">*</span></p>
+            <div class="radio-group">
+              <label>
+                <input
+                  type="radio"
+                  name="previousEmployee"
+                  value="yes"
+                  <%= data.previousEmployee === "yes" ? "checked" : "" %>
+                  required
+                />
+                Yes
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="previousEmployee"
+                  value="no"
+                  <%= data.previousEmployee === "no" ? "checked" : "" %>
+                  required
+                />
+                No
+              </label>
+            </div>
+            <% if (errors.previousEmployee) { %>
+              <p class="error"><%= errors.previousEmployee %></p>
+            <% } %>
+          </fieldset>
 
           <fieldset class="sub-section">
             <legend>Ability to Perform Job (Example)</legend>

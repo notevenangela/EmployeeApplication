@@ -61,6 +61,11 @@ app.post("/submit", (req, res) => {
   const data = req.body;
   const errors = {};
 
+  // Application Date
+  if (!data.applicationDate) {
+    errors.applicationDate = "Application date is required.";
+  }
+
   // Applicant Information
   if (!data.firstName || !isLettersOnly(data.firstName) || data.firstName.length > 64) {
     errors.firstName = "First name is required, letters only, max 64 characters.";
@@ -70,8 +75,28 @@ app.post("/submit", (req, res) => {
     errors.lastName = "Last name is required, letters only, max 64 characters.";
   }
 
+  if (data.middleName && (!isLettersOnly(data.middleName) || data.middleName.length > 64)) {
+    errors.middleName = "Middle name must be letters only, max 64 characters.";
+  }
+
   if (data.address && data.address.length > 100) {
     errors.address = "Address cannot exceed 100 characters.";
+  }
+
+  if (data.city && (!isLettersOnly(data.city) || data.city.length > 50)) {
+    errors.city = "City must be letters only, max 50 characters.";
+  }
+
+  if (data.state && (!/^[A-Z]{2}$/.test(data.state))) {
+    errors.state = "Please select a valid state.";
+  }
+
+  if (data.zipCode && (!/^\d{5}(-\d{4})?$/.test(data.zipCode))) {
+    errors.zipCode = "ZIP code must be 5 digits or 5-4 format (e.g., 12345 or 12345-6789).";
+  }
+
+  if (data.yearsAtAddress && (isNaN(data.yearsAtAddress) || data.yearsAtAddress < 0 || data.yearsAtAddress > 100)) {
+    errors.yearsAtAddress = "Years at address must be a number between 0 and 100.";
   }
 
   if (!data.phone || !isPhone(data.phone)) {
@@ -82,8 +107,27 @@ app.post("/submit", (req, res) => {
     errors.email = "Please enter a valid email address (max 64 characters).";
   }
 
+  // Age Verification
+  if (!data.ageVerification) {
+    errors.ageVerification = "Please confirm if you are at least 18 years old.";
+  }
+
+  if (data.desiredSalary && (isNaN(data.desiredSalary) || data.desiredSalary < 7.25 || data.desiredSalary > 100)) {
+    errors.desiredSalary = "Desired salary must be between $7.25 and $100.00 per hour.";
+  }
+
   if (!data.positionApplied) {
     errors.positionApplied = "Please select a position.";
+  }
+
+  // Work Authorization (CEO Question 11)
+  if (!data.workAuthorized) {
+    errors.workAuthorized = "Please indicate if you are authorized to work in the U.S.";
+  }
+
+  // Previous Employment (CEO Question 9)
+  if (!data.previousEmployee) {
+    errors.previousEmployee = "Please indicate if you have previously worked for or volunteered with this company.";
   }
 
   // Availability
