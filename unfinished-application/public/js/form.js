@@ -1,102 +1,55 @@
+console.log("FORM JS IS LOADED");
 document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("applicationForm");
-  if (!form) return;
-
   const steps = Array.from(document.querySelectorAll(".form-step"));
   const progressSteps = Array.from(document.querySelectorAll(".progress-step"));
+  const nextButtons = document.querySelectorAll(".next-step");
+  const prevButtons = document.querySelectorAll(".prev-step");
   const allDaysBtn = document.getElementById("selectAllDays");
   const availableDaysGroup = document.getElementById("availableDaysGroup");
-  const globalMessages = document.getElementById("global-messages");
 
   let currentStepIndex = 0;
 
   function showStep(index) {
+    // Clamp index just in case
+    if (index < 0) index = 0;
+    if (index >= steps.length) index = steps.length - 1;
+
     steps.forEach((step, i) => {
       step.classList.toggle("active", i === index);
     });
+
     progressSteps.forEach((p, i) => {
       p.classList.toggle("active", i === index);
     });
+
     currentStepIndex = index;
-    if (globalMessages) {
-      globalMessages.textContent = `Step ${index + 1} of ${steps.length}`;
-    }
   }
 
-  function validateCurrentStep() {
-    const step = steps[currentStepIndex];
-    const inputs = Array.from(step.querySelectorAll("input, select, textarea"));
-    let valid = true;
-
-    inputs.forEach((input) => {
-      input.classList.remove("invalid");
-      if (!input.checkValidity()) {
-        valid = false;
-        input.classList.add("invalid");
-      }
+  // Move forward
+  nextButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      showStep(currentStepIndex + 1);
     });
-
-    if (!valid && globalMessages) {
-      globalMessages.textContent = "Please fix the errors on this step before continuing.";
-    }
-
-    return valid;
-  }
-
-  form.addEventListener("click", (e) => {
-    if (e.target.classList.contains("next-step")) {
-      if (!validateCurrentStep()) return;
-      if (currentStepIndex < steps.length - 1) {
-        showStep(currentStepIndex + 1);
-      }
-    }
-
-    if (e.target.classList.contains("prev-step")) {
-      if (currentStepIndex > 0) {
-        showStep(currentStepIndex - 1);
-      }
-    }
   });
 
+  // Move backward
+  prevButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      showStep(currentStepIndex - 1);
+    });
+  });
+
+  // "All Days" button on Availability step
   if (allDaysBtn && availableDaysGroup) {
     allDaysBtn.addEventListener("click", () => {
       const checkboxes = availableDaysGroup.querySelectorAll('input[type="checkbox"]');
       const allChecked = Array.from(checkboxes).every((cb) => cb.checked);
       checkboxes.forEach((cb) => {
-        cb.checked = !allChecked;
+        cb.checked = !allChecked; // toggle all on or off
       });
     });
   }
 
-  // Real-time validation feedback
-  form.addEventListener("input", (e) => {
-    const target = e.target;
-    if (!target.matches("input, select, textarea")) return;
-    target.classList.remove("invalid");
-    if (!target.checkValidity()) {
-      target.classList.add("invalid");
-    }
-  });
-
-  // Submit-level check for required validation beyond HTML5
-  form.addEventListener("submit", (e) => {
-    if (!form.checkValidity()) {
-      e.preventDefault();
-      // Try to jump to the first step with an invalid field
-      const invalid = form.querySelector(".invalid, input:invalid, select:invalid, textarea:invalid");
-      if (invalid) {
-        const step = invalid.closest(".form-step");
-        if (step) {
-          const index = steps.indexOf(step);
-          if (index >= 0) showStep(index);
-        }
-      }
-      if (globalMessages) {
-        globalMessages.textContent = "Please review the highlighted fields.";
-      }
-    }
-  });
-
-  // Initialize step 1
+  // Start on step 0
   showStep(0);
 });
