@@ -63,6 +63,20 @@ document.addEventListener("DOMContentLoaded", () => {
         el.value = "";
       });
 
+      // Add delete button to cloned entry
+      const deleteBtn = document.createElement("button");
+      deleteBtn.type = "button";
+      deleteBtn.className = "delete-btn";
+      deleteBtn.textContent = "Remove";
+      deleteBtn.addEventListener("click", () => {
+        // Don't allow removing if it's the only education entry
+        const allEntries = eduSection.querySelectorAll(".education-entry");
+        if (allEntries.length > 1) {
+          clone.remove();
+        }
+      });
+
+      clone.appendChild(deleteBtn);
       eduSection.insertBefore(clone, addEduBtn);
     });
   }
@@ -81,6 +95,20 @@ document.addEventListener("DOMContentLoaded", () => {
         el.value = "";
       });
 
+      // Add delete button to cloned entry
+      const deleteBtn = document.createElement("button");
+      deleteBtn.type = "button";
+      deleteBtn.className = "delete-btn";
+      deleteBtn.textContent = "Remove";
+      deleteBtn.addEventListener("click", () => {
+        // Don't allow removing if it's the only work entry
+        const allEntries = workSection.querySelectorAll(".work-entry");
+        if (allEntries.length > 1) {
+          clone.remove();
+        }
+      });
+
+      clone.appendChild(deleteBtn);
       workSection.insertBefore(clone, addWorkBtn);
     });
   }
@@ -99,6 +127,20 @@ document.addEventListener("DOMContentLoaded", () => {
         el.value = "";
       });
 
+      // Add delete button to cloned entry
+      const deleteBtn = document.createElement("button");
+      deleteBtn.type = "button";
+      deleteBtn.className = "delete-btn";
+      deleteBtn.textContent = "Remove";
+      deleteBtn.addEventListener("click", () => {
+        // Don't allow removing if it's the only reference entry
+        const allEntries = refSection.querySelectorAll(".reference-entry");
+        if (allEntries.length > 1) {
+          clone.remove();
+        }
+      });
+
+      clone.appendChild(deleteBtn);
       refSection.insertBefore(clone, addRefBtn);
     });
   }
@@ -121,4 +163,67 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Start on first step
   showStep(0);
+
+  // Form submission validation
+  const applicationForm = document.querySelector('form');
+  if (applicationForm) {
+    applicationForm.addEventListener('submit', (e) => {
+      // Get all required fields
+      const requiredFields = applicationForm.querySelectorAll('[required]');
+      const emptyFields = [];
+
+      // Check each required field
+      requiredFields.forEach(field => {
+        let isEmpty = false;
+        
+        if (field.type === 'radio') {
+          // For radio buttons, check if any in the group is selected
+          const radioGroup = applicationForm.querySelectorAll(`[name="${field.name}"]`);
+          const isGroupChecked = Array.from(radioGroup).some(radio => radio.checked);
+          if (!isGroupChecked) {
+            // Only add once per radio group
+            if (!emptyFields.some(item => item.name === field.name)) {
+              isEmpty = true;
+            }
+          }
+        } else if (field.type === 'checkbox') {
+          // For checkboxes, check if it's checked
+          if (!field.checked) {
+            isEmpty = true;
+          }
+        } else {
+          // For text, email, date, select, etc.
+          if (!field.value || field.value.trim() === '') {
+            isEmpty = true;
+          }
+        }
+
+        if (isEmpty) {
+          // Get field label or name for better error message
+          const label = applicationForm.querySelector(`label[for="${field.id}"]`);
+          const fieldName = label ? label.textContent.replace('*', '').trim() : field.name;
+          emptyFields.push({ name: field.name, label: fieldName });
+        }
+      });
+
+      // If there are empty required fields, prevent submission and show alert
+      if (emptyFields.length > 0) {
+        e.preventDefault();
+        
+        let message = 'Please make sure all required fields are completed:\n\n';
+        emptyFields.forEach(field => {
+          message += `• ${field.label}\n`;
+        });
+
+        alert(message);
+        
+        // Scroll to first empty field
+        const firstEmptyField = applicationForm.querySelector(`[name="${emptyFields[0].name}"]`);
+        if (firstEmptyField) {
+          firstEmptyField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          firstEmptyField.focus();
+        }
+      }
+    });
+  }
 });
