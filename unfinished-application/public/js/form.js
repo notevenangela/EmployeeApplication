@@ -342,7 +342,7 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
           <div class="modal-actions">
             <button class="modal-btn success" data-action="confirm">
-              Submit Another Application
+              Close
             </button>
           </div>
         </div>
@@ -765,9 +765,9 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => {
       console.log('Showing success modal...');
       showSuccessModal(message, position).then(() => {
-        console.log('Success modal closed, redirecting...');
-        // Redirect to home page for new application
-        window.location.href = '/';
+        console.log('Success modal closed');
+        // Stay on the current page instead of redirecting
+        // User can manually navigate away if they want to submit another application
       });
     }, 500);
   } else {
@@ -777,7 +777,14 @@ document.addEventListener("DOMContentLoaded", () => {
   // Form submission validation
   const applicationForm = document.querySelector('form');
   if (applicationForm) {
-    applicationForm.addEventListener('submit', async (e) => {
+    const handleFormSubmit = async (e) => {
+      console.log('Form submission started');
+      
+      // IMMEDIATELY prevent any form submission
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      
       // Clear any existing error highlighting
       clearAllFieldErrors();
       
@@ -867,23 +874,51 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // If there are empty required fields, prevent submission and show modal
       if (emptyFields.length > 0) {
-        e.preventDefault();
+        console.log('Validation failed, staying on page');
         
-        // Highlight all empty fields
-        emptyFields.forEach(field => {
-          if (field.element) {
-            highlightFieldError(field.element);
-          }
-        });
+        // Force navigation to the last step and ensure it's set
+        const finalStepIndex = steps.length - 1;
+        showStep(finalStepIndex);
+        currentStepIndex = finalStepIndex;
+        
+        // Wait a moment for the step to render before highlighting fields
+        setTimeout(() => {
+          // Highlight all empty fields
+          emptyFields.forEach(field => {
+            if (field.element) {
+              highlightFieldError(field.element);
+            }
+          });
+        }, 100);
         
         await showErrorModal(emptyFields);
         
-        // Scroll to first empty field
-        if (emptyFields[0].element) {
-          emptyFields[0].element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          emptyFields[0].element.focus();
+        // Find the first empty field that's in the current visible step (final step)
+        const currentStep = steps[finalStepIndex];
+        const currentStepFields = emptyFields.filter(field => {
+          return currentStep && currentStep.contains(field.element);
+        });
+        
+        // If there's a field in the final step, scroll to it, otherwise scroll to the first field
+        const targetField = currentStepFields.length > 0 ? currentStepFields[0] : emptyFields[0];
+        if (targetField && targetField.element) {
+          targetField.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          targetField.element.focus();
         }
+        
+        return false; // Explicitly return false to prevent any further form processing
+      } else {
+        // If all validation passes, manually submit the form
+        console.log('Validation passed, submitting form');
+        
+        // Remove this event listener to avoid infinite loop
+        applicationForm.removeEventListener('submit', handleFormSubmit);
+        
+        // Create a new form submission
+        applicationForm.submit();
       }
-    });
+    };
+
+    applicationForm.addEventListener('submit', handleFormSubmit);
   }
 });

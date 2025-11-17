@@ -947,8 +947,9 @@
                 name="acknowledge"
                 value="yes"
                 <%= data.acknowledge === "yes" ? "checked" : "" %>
+                required
               />
-              I have read and agree to the above.
+              I have read and agree to the above. <span class="required">*</span>
             </label>
             <% if (errors.acknowledge) { %>
               <p class="error"><%= errors.acknowledge %></p>
