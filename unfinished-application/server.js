@@ -134,6 +134,14 @@ app.post("/submit", (req, res) => {
     errors.previousEmployee = "Please indicate if you have previously worked for or volunteered with this company.";
   }
 
+  // Sponsorship requirement (required field)
+  if (!data.requiresSponsorship) {
+    errors.requiresSponsorship = "Please indicate if you will require sponsorship for employment visa status.";
+  }
+
+  // Veteran status (optional - no validation needed since it's voluntary)
+  // Disability status (optional - no validation needed since it's voluntary)
+
   // Availability
   if (!data.employmentType) {
     errors.employmentType = "Please select employment type.";

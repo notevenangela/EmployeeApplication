@@ -229,8 +229,8 @@
                 id="phone"
                 name="phone"
                 type="text"
-                placeholder="(555)555-5555"
-                pattern="^\\(\\d{3}\\)\\d{3}-\\d{4}$"
+                placeholder="(555) 555-5555"
+                maxlength="14"
                 required
                 value="<%= data.phone || '' %>"
               />
@@ -346,6 +346,33 @@
             <% if (errors.workAuthorized) { %>
               <p class="error"><%= errors.workAuthorized %></p>
             <% } %>
+
+            <label class="question-label">Will you now or in the future require sponsorship for employment visa status (e.g., H-1B visa status)? <span class="required">*</span></label>
+            <div class="radio-group">
+              <label>
+                <input
+                  type="radio"
+                  name="requiresSponsorship"
+                  value="yes"
+                  <%= data.requiresSponsorship === "yes" ? "checked" : "" %>
+                  required
+                />
+                Yes
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="requiresSponsorship"
+                  value="no"
+                  <%= data.requiresSponsorship === "no" ? "checked" : "" %>
+                  required
+                />
+                No
+              </label>
+            </div>
+            <% if (errors.requiresSponsorship) { %>
+              <p class="error"><%= errors.requiresSponsorship %></p>
+            <% } %>
           </fieldset>
 
           <fieldset class="sub-section">
@@ -379,7 +406,7 @@
           </fieldset>
 
           <fieldset class="sub-section">
-            <legend>Ability to Perform Job (Example)</legend>
+            <legend>Ability to Perform Job</legend>
             <p class="hint">
               In a real deployment, this should be phrased in an ADA-safe way (can you perform essential job functions with/without accommodation).
             </p>
@@ -403,6 +430,81 @@
                 I may need reasonable accommodations.
               </label>
             </div>
+          </fieldset>
+
+          <fieldset class="sub-section">
+            <legend>Disability Status</legend>
+            <label class="question-label">Do you have a disability? <span class="optional">(Optional)</span></label>
+            <p class="hint">We are a federal contractor or subcontractor. The law requires us to provide equal employment opportunity to qualified people with disabilities. We have a goal of having at least 7% of our workers as people with disabilities. The law says we must measure our progress towards this goal. To do this, we must ask applicants and employees if they have a disability or have ever had one. This information is voluntary and will not be used against you.</p>
+            <div class="radio-group">
+              <label>
+                <input
+                  type="radio"
+                  name="disabilityStatus"
+                  value="yes"
+                  <%= data.disabilityStatus === "yes" ? "checked" : "" %>
+                />
+                Yes, I have a disability (or have a history/record of having a disability)
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="disabilityStatus"
+                  value="no"
+                  <%= data.disabilityStatus === "no" ? "checked" : "" %>
+                />
+                No, I don't have a disability
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="disabilityStatus"
+                  value="prefer-not-to-answer"
+                  <%= data.disabilityStatus === "prefer-not-to-answer" ? "checked" : "" %>
+                />
+                I don't want to answer
+              </label>
+            </div>
+            <% if (errors.disabilityStatus) { %>
+              <p class="error"><%= errors.disabilityStatus %></p>
+            <% } %>
+          </fieldset>
+
+          <fieldset class="sub-section">
+            <legend>Veteran Status</legend>
+            <label class="question-label">Are you a veteran? <span class="optional">(Optional)</span></label>
+            <div class="radio-group">
+              <label>
+                <input
+                  type="radio"
+                  name="veteranStatus"
+                  value="yes"
+                  <%= data.veteranStatus === "yes" ? "checked" : "" %>
+                />
+                Yes
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="veteranStatus"
+                  value="no"
+                  <%= data.veteranStatus === "no" ? "checked" : "" %>
+                />
+                No
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="veteranStatus"
+                  value="prefer-not-to-answer"
+                  <%= data.veteranStatus === "prefer-not-to-answer" ? "checked" : "" %>
+                />
+                I don't want to answer
+              </label>
+            </div>
+            <% if (errors.veteranStatus) { %>
+              <p class="error"><%= errors.veteranStatus %></p>
+            <% } %>
           </fieldset>
 
           <div class="step-controls">
@@ -784,8 +886,8 @@
                   id="refPhone"
                   name="refPhone"
                   type="text"
-                  placeholder="(555)555-5555"
-                  pattern="^\\(\\d{3}\\)\\d{3}-\\d{4}$"
+                  placeholder="(555) 555-5555"
+                  maxlength="14"
                   value="<%= data.refPhone || '' %>"
                 />
                 <% if (errors.refPhone) { %>

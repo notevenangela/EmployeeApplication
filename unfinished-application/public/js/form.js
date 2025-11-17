@@ -651,6 +651,60 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // Phone number formatting and validation
+  function formatPhoneNumber(value) {
+    // Remove all non-numeric characters
+    const phoneNumber = value.replace(/\D/g, '');
+    
+    // Format as (XXX) XXX-XXXX
+    if (phoneNumber.length >= 10) {
+      return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`;
+    } else if (phoneNumber.length >= 6) {
+      return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6)}`;
+    } else if (phoneNumber.length >= 3) {
+      return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`;
+    } else if (phoneNumber.length > 0) {
+      return `(${phoneNumber}`;
+    }
+    return phoneNumber;
+  }
+
+  function isValidPhoneNumber(value) {
+    // Remove all non-numeric characters and check if exactly 10 digits
+    const phoneNumber = value.replace(/\D/g, '');
+    return phoneNumber.length === 10;
+  }
+
+  // Add phone formatting to main phone field and reference phone fields
+  document.addEventListener('input', (e) => {
+    if (e.target.matches('input[name="phone"], input[name="refPhone"]')) {
+      const cursorPosition = e.target.selectionStart;
+      const oldLength = e.target.value.length;
+      
+      // Format the phone number
+      e.target.value = formatPhoneNumber(e.target.value);
+      
+      // Adjust cursor position after formatting
+      const newLength = e.target.value.length;
+      const lengthDiff = newLength - oldLength;
+      e.target.setSelectionRange(cursorPosition + lengthDiff, cursorPosition + lengthDiff);
+      
+      // Clear any existing errors if the phone number becomes valid
+      if (isValidPhoneNumber(e.target.value)) {
+        clearFieldError(e.target);
+      }
+    }
+  });
+
+  // Validate phone numbers on blur
+  document.addEventListener('blur', (e) => {
+    if (e.target.matches('input[name="phone"], input[name="refPhone"]')) {
+      if (e.target.value && !isValidPhoneNumber(e.target.value)) {
+        highlightFieldError(e.target);
+      }
+    }
+  }, true);
+
   // Check for success message on page load
   const successData = document.getElementById('success-data');
   console.log('Success data element:', successData);
