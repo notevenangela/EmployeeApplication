@@ -87,12 +87,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Function to check if any field in a section has been filled
   function isSectionStarted(sectionElement) {
-    const inputs = sectionElement.querySelectorAll('input, select, textarea');
-    return Array.from(inputs).some(input => {
-      if (input.type === 'radio' || input.type === 'checkbox') {
-        return input.checked;
+    // Define the key fields that indicate a section has been started
+    const keyFields = {
+      education: ['schoolName', 'educationLevel'],
+      work: ['employerName', 'jobTitle'], 
+      reference: ['refName', 'refCompany']
+    };
+    
+    // Determine section type based on class
+    let sectionType = '';
+    if (sectionElement.classList.contains('education-entry')) {
+      sectionType = 'education';
+    } else if (sectionElement.classList.contains('work-entry')) {
+      sectionType = 'work';
+    } else if (sectionElement.classList.contains('reference-entry')) {
+      sectionType = 'reference';
+    }
+    
+    if (!sectionType || !keyFields[sectionType]) {
+      return false; // Unknown section type
+    }
+    
+    // Check if any of the key fields for this section type have been filled
+    return keyFields[sectionType].some(fieldName => {
+      const field = sectionElement.querySelector(`[name="${fieldName}"]`);
+      if (!field) return false;
+      
+      if (field.type === 'radio' || field.type === 'checkbox') {
+        return field.checked;
       }
-      return input.value && input.value.trim() !== '';
+      return field.value && field.value.trim() !== '';
     });
   }
 
