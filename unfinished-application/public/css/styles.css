@@ -494,6 +494,49 @@ textarea:focus {
   color: #7f1d1d;
 }
 
+/* Field highlighting for validation errors */
+.field-error {
+  border: 2px solid #dc2626 !important;
+  background-color: #fef2f2 !important;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1) !important;
+}
+
+.field-error:focus {
+  outline: 2px solid #dc2626 !important;
+  outline-offset: 1px;
+  border-color: #dc2626 !important;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2) !important;
+}
+
+/* Animation for field error highlighting */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.field-error-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+/* Error highlighting for radio button groups */
+.radio-group.field-error {
+  background-color: #fef2f2;
+  border: 2px solid #dc2626;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  margin: 0.25rem 0;
+}
+
+/* Error highlighting for checkbox groups */
+.checkbox-group.field-error {
+  background-color: #fef2f2;
+  border: 2px solid #dc2626;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  margin: 0.25rem 0;
+}
+
 @media (max-width: 640px) {
   .two-column {
     grid-template-columns: 1fr;

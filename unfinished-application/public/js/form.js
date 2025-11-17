@@ -10,6 +10,68 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let currentStepIndex = 0;
 
+  // Helper function to highlight field errors
+  function highlightFieldError(field) {
+    // Clear any existing error highlighting first
+    clearFieldError(field);
+    
+    if (field.type === 'radio') {
+      // For radio buttons, highlight the entire radio group
+      const radioGroup = document.querySelector(`fieldset:has(input[name="${field.name}"])`);
+      if (radioGroup) {
+        radioGroup.classList.add('field-error');
+      } else {
+        // Fallback: add error class to all radio buttons in the group
+        const radioButtons = document.querySelectorAll(`input[name="${field.name}"]`);
+        radioButtons.forEach(radio => {
+          radio.classList.add('field-error');
+          radio.closest('.radio-group')?.classList.add('field-error');
+        });
+      }
+    } else if (field.type === 'checkbox') {
+      // For checkboxes, highlight the checkbox and its container
+      field.classList.add('field-error');
+      field.closest('.checkbox-group')?.classList.add('field-error');
+    } else {
+      // For regular input fields
+      field.classList.add('field-error', 'field-error-shake');
+      
+      // Remove shake animation after it completes
+      setTimeout(() => {
+        field.classList.remove('field-error-shake');
+      }, 500);
+    }
+  }
+
+  // Helper function to clear field errors
+  function clearFieldError(field) {
+    if (field.type === 'radio') {
+      const radioGroup = document.querySelector(`fieldset:has(input[name="${field.name}"])`);
+      if (radioGroup) {
+        radioGroup.classList.remove('field-error');
+      } else {
+        const radioButtons = document.querySelectorAll(`input[name="${field.name}"]`);
+        radioButtons.forEach(radio => {
+          radio.classList.remove('field-error');
+          radio.closest('.radio-group')?.classList.remove('field-error');
+        });
+      }
+    } else if (field.type === 'checkbox') {
+      field.classList.remove('field-error');
+      field.closest('.checkbox-group')?.classList.remove('field-error');
+    } else {
+      field.classList.remove('field-error', 'field-error-shake');
+    }
+  }
+
+  // Helper function to clear all field errors in current step
+  function clearAllFieldErrors() {
+    const allErrorFields = document.querySelectorAll('.field-error');
+    allErrorFields.forEach(element => {
+      element.classList.remove('field-error');
+    });
+  }
+
   function showStep(index) {
     if (index < 0) index = 0;
     if (index >= steps.length) index = steps.length - 1;
@@ -301,6 +363,7 @@ document.addEventListener("DOMContentLoaded", () => {
   async function navigateToStep(targetIndex, forceNavigation = false) {
     // Don't check validation when going backwards or if forced
     if (targetIndex <= currentStepIndex || forceNavigation) {
+      clearAllFieldErrors(); // Clear errors when navigating
       showStep(targetIndex);
       return true;
     }
@@ -309,6 +372,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const emptyFields = getCurrentStepRequiredFields();
     
     if (emptyFields.length > 0) {
+      // Highlight all empty fields
+      emptyFields.forEach(field => {
+        if (field.element) {
+          highlightFieldError(field.element);
+        }
+      });
+
       const confirmed = await showNavigationWarning(emptyFields);
       if (!confirmed) {
         // Focus on first empty field
@@ -317,6 +387,9 @@ document.addEventListener("DOMContentLoaded", () => {
           emptyFields[0].element.focus();
         }
         return false;
+      } else {
+        // User chose to continue anyway, clear the error highlighting
+        clearAllFieldErrors();
       }
     }
 
@@ -463,6 +536,19 @@ document.addEventListener("DOMContentLoaded", () => {
   // Start on first step
   showStep(0);
 
+  // Add event listeners to clear error highlighting when users interact with fields
+  document.addEventListener('input', (e) => {
+    if (e.target.matches('input, select, textarea')) {
+      clearFieldError(e.target);
+    }
+  });
+
+  document.addEventListener('change', (e) => {
+    if (e.target.matches('input[type="radio"], input[type="checkbox"]')) {
+      clearFieldError(e.target);
+    }
+  });
+
   // Check for success message on page load
   const successData = document.getElementById('success-data');
   console.log('Success data element:', successData);
@@ -473,17 +559,24 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log('Success message:', message, 'Position:', position);
     
     setTimeout(() => {
+      console.log('Showing success modal...');
       showSuccessModal(message, position).then(() => {
+        console.log('Success modal closed, redirecting...');
         // Redirect to home page for new application
         window.location.href = '/';
       });
     }, 500);
+  } else {
+    console.log('No success data found on page load');
   }
 
   // Form submission validation
   const applicationForm = document.querySelector('form');
   if (applicationForm) {
     applicationForm.addEventListener('submit', async (e) => {
+      // Clear any existing error highlighting
+      clearAllFieldErrors();
+      
       // Get all required fields across all steps
       const requiredFields = applicationForm.querySelectorAll('[required]');
       const emptyFields = [];
@@ -525,6 +618,13 @@ document.addEventListener("DOMContentLoaded", () => {
       // If there are empty required fields, prevent submission and show modal
       if (emptyFields.length > 0) {
         e.preventDefault();
+        
+        // Highlight all empty fields
+        emptyFields.forEach(field => {
+          if (field.element) {
+            highlightFieldError(field.element);
+          }
+        });
         
         await showErrorModal(emptyFields);
         
