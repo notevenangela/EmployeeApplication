@@ -524,8 +524,8 @@ textarea:focus {
   background-color: #fef2f2;
   border: 2px solid #dc2626;
   border-radius: 0.5rem;
-  padding: 0.5rem;
-  margin: 0.25rem 0;
+  padding: 0.75rem;
+  margin: 0.5rem 0;
 }
 
 /* Error highlighting for checkbox groups */
@@ -535,6 +535,21 @@ textarea:focus {
   border-radius: 0.5rem;
   padding: 0.5rem;
   margin: 0.25rem 0;
+}
+
+/* Question label styling for radio groups */
+.question-label {
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+  color: #222 !important;
+  margin-bottom: 0.75rem !important;
+  display: block !important;
+}
+
+/* Ensure question labels are distinct from option labels */
+.radio-group label {
+  font-weight: normal;
+  font-size: 0.95rem;
 }
 
 @media (max-width: 640px) {

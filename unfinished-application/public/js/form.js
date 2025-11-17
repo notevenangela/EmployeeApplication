@@ -16,16 +16,15 @@ document.addEventListener("DOMContentLoaded", () => {
     clearFieldError(field);
     
     if (field.type === 'radio') {
-      // For radio buttons, highlight the entire radio group
-      const radioGroup = document.querySelector(`fieldset:has(input[name="${field.name}"])`);
-      if (radioGroup) {
-        radioGroup.classList.add('field-error');
+      // For radio buttons, highlight just the radio group div, not the entire fieldset
+      const radioGroupDiv = field.closest('.radio-group');
+      if (radioGroupDiv) {
+        radioGroupDiv.classList.add('field-error');
       } else {
         // Fallback: add error class to all radio buttons in the group
         const radioButtons = document.querySelectorAll(`input[name="${field.name}"]`);
         radioButtons.forEach(radio => {
           radio.classList.add('field-error');
-          radio.closest('.radio-group')?.classList.add('field-error');
         });
       }
     } else if (field.type === 'checkbox') {
@@ -46,14 +45,13 @@ document.addEventListener("DOMContentLoaded", () => {
   // Helper function to clear field errors
   function clearFieldError(field) {
     if (field.type === 'radio') {
-      const radioGroup = document.querySelector(`fieldset:has(input[name="${field.name}"])`);
-      if (radioGroup) {
-        radioGroup.classList.remove('field-error');
+      const radioGroupDiv = field.closest('.radio-group');
+      if (radioGroupDiv) {
+        radioGroupDiv.classList.remove('field-error');
       } else {
         const radioButtons = document.querySelectorAll(`input[name="${field.name}"]`);
         radioButtons.forEach(radio => {
           radio.classList.remove('field-error');
-          radio.closest('.radio-group')?.classList.remove('field-error');
         });
       }
     } else if (field.type === 'checkbox') {
