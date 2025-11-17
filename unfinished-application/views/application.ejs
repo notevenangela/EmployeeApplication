@@ -13,6 +13,11 @@
 
   <main>
     <div id="global-messages" aria-live="polite" class="sr-only"></div>
+    <% if (success) { %>
+    <div id="success-data" style="display: none;" 
+         data-message="<%= success.message %>" 
+         data-position="<%= success.position %>"></div>
+    <% } %>
 
     <section class="form-container">
       <form id="applicationForm" action="/submit" method="post" novalidate>

@@ -29,7 +29,9 @@ function isValidEmail(email) {
 
 function isPhone(phone) {
   if (!phone) return false;
-  return /^\(\d{3}\)\d{3}-\d{4}$/.test(phone);
+  // Remove all non-digits and check if we have exactly 10 digits
+  const digits = phone.replace(/\D/g, '');
+  return digits.length === 10;
 }
 
 function isLettersOnly(str) {
@@ -52,12 +54,14 @@ app.get("/", (req, res) => {
     errors: {},
     data: {},
     todayISO: todayISO(),
-    futureMinDate: isoOneDayFromToday()
+    futureMinDate: isoOneDayFromToday(),
+    success: null
   });
 });
 
 // POST submission
 app.post("/submit", (req, res) => {
+  console.log('Form submitted with data:', req.body);
   const data = req.body;
   const errors = {};
 
@@ -100,7 +104,7 @@ app.post("/submit", (req, res) => {
   }
 
   if (!data.phone || !isPhone(data.phone)) {
-    errors.phone = "Phone must be in the format (###)###-####.";
+    errors.phone = "Phone number is required and must be 10 digits.";
   }
 
   if (!data.email || !isValidEmail(data.email) || data.email.length > 64) {
@@ -183,7 +187,7 @@ app.post("/submit", (req, res) => {
     errors.refCompany = "Company max 50 characters.";
   }
   if (data.refPhone && !isPhone(data.refPhone)) {
-    errors.refPhone = "Reference phone must be in the format (###)###-####.";
+    errors.refPhone = "Reference phone number must be 10 digits.";
   }
   if (data.refEmail && !isValidEmail(data.refEmail)) {
     errors.refEmail = "Reference email must be valid.";
@@ -206,16 +210,29 @@ app.post("/submit", (req, res) => {
   }
 
   if (Object.keys(errors).length > 0) {
+    console.log('Validation errors found:', errors);
     return res.status(400).render("application", {
       errors,
       data,
       todayISO: todayISO(),
-      futureMinDate: isoOneDayFromToday()
+      futureMinDate: isoOneDayFromToday(),
+      success: null
     });
   }
 
+  console.log('Form validation passed, showing success');
   // At this point you would save to a database; for the assignment we just show success.
-  res.render("success", { data });
+  // Instead of rendering a new page, we'll redirect back with a success flag
+  res.render("application", {
+    errors: {},
+    data: {},
+    todayISO: todayISO(),
+    futureMinDate: isoOneDayFromToday(),
+    success: {
+      message: "Your application has been successfully submitted!",
+      position: data.positionApplied || 'N/A'
+    }
+  });
 });
 
 app.listen(PORT, () => {

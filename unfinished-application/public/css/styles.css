@@ -303,6 +303,197 @@ textarea:focus {
   position: relative;
 }
 
+/* Custom Modal for Navigation Warning */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 0.75rem;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  transform: scale(0.9);
+  transition: transform 0.3s ease;
+}
+
+.modal-overlay.active .modal {
+  transform: scale(1);
+}
+
+.modal-header {
+  padding: 1.5rem 1.5rem 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #dc2626;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.modal-title::before {
+  content: "⚠️";
+  font-size: 1.5rem;
+}
+
+.modal-title.success {
+  color: #059669;
+}
+
+.modal-title.success::before {
+  content: "✅";
+  font-size: 1.5rem;
+}
+
+.modal-title.error {
+  color: #dc2626;
+}
+
+.modal-title.error::before {
+  content: "❌";
+  font-size: 1.5rem;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-body p {
+  margin: 0 0 1rem;
+  color: #374151;
+  line-height: 1.5;
+}
+
+.missing-fields {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+.missing-fields-title {
+  font-weight: 600;
+  color: #dc2626;
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+}
+
+.missing-fields-list {
+  margin: 0;
+  padding-left: 1.5rem;
+  color: #7f1d1d;
+}
+
+.missing-fields-list li {
+  margin: 0.25rem 0;
+}
+
+.modal-actions {
+  padding: 1rem 1.5rem 1.5rem;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.modal-btn {
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.modal-btn.primary {
+  background: #dc2626;
+  color: #fff;
+}
+
+.modal-btn.primary:hover {
+  background: #b91c1c;
+}
+
+.modal-btn.secondary {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.modal-btn.secondary:hover {
+  background: #e5e7eb;
+}
+
+.modal-btn.success {
+  background: #059669;
+  color: #fff;
+}
+
+.modal-btn.success:hover {
+  background: #047857;
+}
+
+.success-content {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+.success-content h3 {
+  color: #059669;
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+}
+
+.success-content p {
+  margin: 0.5rem 0;
+  color: #166534;
+}
+
+.error-content {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+.error-content h3 {
+  color: #dc2626;
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+}
+
+.error-content p {
+  margin: 0.5rem 0;
+  color: #7f1d1d;
+}
+
 @media (max-width: 640px) {
   .two-column {
     grid-template-columns: 1fr;
@@ -311,6 +502,19 @@ textarea:focus {
   .delete-entry {
     float: none;
     display: block;
+    width: 100%;
+  }
+  
+  .modal {
+    margin: 1rem;
+    width: calc(100% - 2rem);
+  }
+  
+  .modal-actions {
+    flex-direction: column-reverse;
+  }
+  
+  .modal-btn {
     width: 100%;
   }
 }

@@ -25,17 +25,316 @@ document.addEventListener("DOMContentLoaded", () => {
     currentStepIndex = index;
   }
 
+  // Function to check if current step has unfilled required fields
+  function getCurrentStepRequiredFields() {
+    const currentStep = steps[currentStepIndex];
+    if (!currentStep) return [];
+
+    const requiredFields = currentStep.querySelectorAll('[required]');
+    const emptyFields = [];
+
+    requiredFields.forEach(field => {
+      let isEmpty = false;
+      
+      if (field.type === 'radio') {
+        // For radio buttons, check if any in the group is selected
+        const radioGroup = currentStep.querySelectorAll(`[name="${field.name}"]`);
+        const isGroupChecked = Array.from(radioGroup).some(radio => radio.checked);
+        if (!isGroupChecked) {
+          // Only add once per radio group
+          if (!emptyFields.some(item => item.name === field.name)) {
+            isEmpty = true;
+          }
+        }
+      } else if (field.type === 'checkbox') {
+        // For checkboxes, check if it's checked
+        if (!field.checked) {
+          isEmpty = true;
+        }
+      } else {
+        // For text, email, date, select, etc.
+        if (!field.value || field.value.trim() === '') {
+          isEmpty = true;
+        }
+      }
+
+      if (isEmpty) {
+        // Get field label or name for better error message
+        const label = document.querySelector(`label[for="${field.id}"]`);
+        const fieldName = label ? label.textContent.replace(/\*/g, '').trim() : field.name;
+        emptyFields.push({ name: field.name, label: fieldName, element: field });
+      }
+    });
+
+    return emptyFields;
+  }
+
+  // Function to create and show custom modal
+  function createModal(title, message, emptyFields, onConfirm, onCancel) {
+    // Remove existing modal if any
+    const existingModal = document.querySelector('.modal-overlay');
+    if (existingModal) {
+      existingModal.remove();
+    }
+
+    // Create modal HTML
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+      <div class="modal">
+        <div class="modal-header">
+          <h2 class="modal-title">${title}</h2>
+        </div>
+        <div class="modal-body">
+          <p>${message}</p>
+          <div class="missing-fields">
+            <div class="missing-fields-title">Missing Required Fields:</div>
+            <ul class="missing-fields-list">
+              ${emptyFields.map(field => `<li>${field.label}</li>`).join('')}
+            </ul>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button class="modal-btn secondary" data-action="cancel">
+            Stay and Complete Fields
+          </button>
+          <button class="modal-btn primary" data-action="confirm">
+            Continue Anyway
+          </button>
+        </div>
+      </div>
+    `;
+
+    // Add event listeners
+    modal.querySelector('[data-action="confirm"]').addEventListener('click', () => {
+      closeModal();
+      onConfirm();
+    });
+
+    modal.querySelector('[data-action="cancel"]').addEventListener('click', () => {
+      closeModal();
+      onCancel();
+    });
+
+    // Close on overlay click
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        closeModal();
+        onCancel();
+      }
+    });
+
+    // Close on escape key
+    const escapeHandler = (e) => {
+      if (e.key === 'Escape') {
+        closeModal();
+        onCancel();
+        document.removeEventListener('keydown', escapeHandler);
+      }
+    };
+    document.addEventListener('keydown', escapeHandler);
+
+    function closeModal() {
+      modal.classList.remove('active');
+      setTimeout(() => {
+        modal.remove();
+      }, 300);
+    }
+
+    // Add to DOM and show
+    document.body.appendChild(modal);
+    
+    // Trigger animation
+    requestAnimationFrame(() => {
+      modal.classList.add('active');
+    });
+  }
+
+  // Function to show warning and ask for confirmation
+  function showNavigationWarning(emptyFields) {
+    return new Promise((resolve) => {
+      createModal(
+        'Incomplete Required Fields',
+        'You have some required fields that haven\'t been filled out yet. Would you like to complete them first, or continue to the next section?',
+        emptyFields,
+        () => resolve(true),  // Continue anyway
+        () => resolve(false)  // Stay and complete
+      );
+    });
+  }
+
+  // Function to show success modal
+  function showSuccessModal(message, details = '') {
+    return new Promise((resolve) => {
+      const modal = document.createElement('div');
+      modal.className = 'modal-overlay';
+      modal.innerHTML = `
+        <div class="modal">
+          <div class="modal-header">
+            <h2 class="modal-title success">Application Submitted Successfully!</h2>
+          </div>
+          <div class="modal-body">
+            <div class="success-content">
+              <h3>Thank you for applying!</h3>
+              <p>${message}</p>
+              ${details ? `<p><strong>Position Applied For:</strong> ${details}</p>` : ''}
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button class="modal-btn success" data-action="confirm">
+              Submit Another Application
+            </button>
+          </div>
+        </div>
+      `;
+
+      // Add event listeners
+      modal.querySelector('[data-action="confirm"]').addEventListener('click', () => {
+        closeModal();
+        resolve();
+      });
+
+      // Close on overlay click
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          closeModal();
+          resolve();
+        }
+      });
+
+      // Close on escape key
+      const escapeHandler = (e) => {
+        if (e.key === 'Escape') {
+          closeModal();
+          resolve();
+          document.removeEventListener('keydown', escapeHandler);
+        }
+      };
+      document.addEventListener('keydown', escapeHandler);
+
+      function closeModal() {
+        modal.classList.remove('active');
+        setTimeout(() => {
+          modal.remove();
+        }, 300);
+      }
+
+      // Add to DOM and show
+      document.body.appendChild(modal);
+      
+      // Trigger animation
+      requestAnimationFrame(() => {
+        modal.classList.add('active');
+      });
+    });
+  }
+
+  // Function to show error modal for form submission
+  function showErrorModal(emptyFields) {
+    return new Promise((resolve) => {
+      const modal = document.createElement('div');
+      modal.className = 'modal-overlay';
+      modal.innerHTML = `
+        <div class="modal">
+          <div class="modal-header">
+            <h2 class="modal-title error">Application Incomplete</h2>
+          </div>
+          <div class="modal-body">
+            <p>Please complete all required fields before submitting your application.</p>
+            <div class="error-content">
+              <h3>Required Fields Missing:</h3>
+              <ul class="missing-fields-list">
+                ${emptyFields.map(field => `<li>${field.label}</li>`).join('')}
+              </ul>
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button class="modal-btn primary" data-action="confirm">
+              Go to First Missing Field
+            </button>
+          </div>
+        </div>
+      `;
+
+      // Add event listeners
+      modal.querySelector('[data-action="confirm"]').addEventListener('click', () => {
+        closeModal();
+        resolve();
+      });
+
+      // Close on overlay click
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          closeModal();
+          resolve();
+        }
+      });
+
+      // Close on escape key
+      const escapeHandler = (e) => {
+        if (e.key === 'Escape') {
+          closeModal();
+          resolve();
+          document.removeEventListener('keydown', escapeHandler);
+        }
+      };
+      document.addEventListener('keydown', escapeHandler);
+
+      function closeModal() {
+        modal.classList.remove('active');
+        setTimeout(() => {
+          modal.remove();
+        }, 300);
+      }
+
+      // Add to DOM and show
+      document.body.appendChild(modal);
+      
+      // Trigger animation
+      requestAnimationFrame(() => {
+        modal.classList.add('active');
+      });
+    });
+  }
+
+  // Function to safely navigate to a step with validation
+  async function navigateToStep(targetIndex, forceNavigation = false) {
+    // Don't check validation when going backwards or if forced
+    if (targetIndex <= currentStepIndex || forceNavigation) {
+      showStep(targetIndex);
+      return true;
+    }
+
+    // Check for unfilled required fields in current step
+    const emptyFields = getCurrentStepRequiredFields();
+    
+    if (emptyFields.length > 0) {
+      const confirmed = await showNavigationWarning(emptyFields);
+      if (!confirmed) {
+        // Focus on first empty field
+        if (emptyFields[0].element) {
+          emptyFields[0].element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          emptyFields[0].element.focus();
+        }
+        return false;
+      }
+    }
+
+    showStep(targetIndex);
+    return true;
+  }
+
   // Next buttons
   nextButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
-      showStep(currentStepIndex + 1);
+      navigateToStep(currentStepIndex + 1);
     });
   });
 
   // Back buttons
   prevButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
-      showStep(currentStepIndex - 1);
+      navigateToStep(currentStepIndex - 1);
     });
   });
 
@@ -44,7 +343,7 @@ document.addEventListener("DOMContentLoaded", () => {
     pill.addEventListener("click", () => {
       const targetIndex = parseInt(pill.dataset.step, 10);
       if (!Number.isNaN(targetIndex)) {
-        showStep(targetIndex);
+        navigateToStep(targetIndex);
       }
     });
   });
@@ -164,11 +463,28 @@ document.addEventListener("DOMContentLoaded", () => {
   // Start on first step
   showStep(0);
 
+  // Check for success message on page load
+  const successData = document.getElementById('success-data');
+  console.log('Success data element:', successData);
+  
+  if (successData) {
+    const message = successData.dataset.message;
+    const position = successData.dataset.position;
+    console.log('Success message:', message, 'Position:', position);
+    
+    setTimeout(() => {
+      showSuccessModal(message, position).then(() => {
+        // Redirect to home page for new application
+        window.location.href = '/';
+      });
+    }, 500);
+  }
+
   // Form submission validation
   const applicationForm = document.querySelector('form');
   if (applicationForm) {
-    applicationForm.addEventListener('submit', (e) => {
-      // Get all required fields
+    applicationForm.addEventListener('submit', async (e) => {
+      // Get all required fields across all steps
       const requiredFields = applicationForm.querySelectorAll('[required]');
       const emptyFields = [];
 
@@ -201,27 +517,21 @@ document.addEventListener("DOMContentLoaded", () => {
         if (isEmpty) {
           // Get field label or name for better error message
           const label = applicationForm.querySelector(`label[for="${field.id}"]`);
-          const fieldName = label ? label.textContent.replace('*', '').trim() : field.name;
-          emptyFields.push({ name: field.name, label: fieldName });
+          const fieldName = label ? label.textContent.replace(/\*/g, '').trim() : field.name;
+          emptyFields.push({ name: field.name, label: fieldName, element: field });
         }
       });
 
-      // If there are empty required fields, prevent submission and show alert
+      // If there are empty required fields, prevent submission and show modal
       if (emptyFields.length > 0) {
         e.preventDefault();
         
-        let message = 'Please make sure all required fields are completed:\n\n';
-        emptyFields.forEach(field => {
-          message += `• ${field.label}\n`;
-        });
-
-        alert(message);
+        await showErrorModal(emptyFields);
         
         // Scroll to first empty field
-        const firstEmptyField = applicationForm.querySelector(`[name="${emptyFields[0].name}"]`);
-        if (firstEmptyField) {
-          firstEmptyField.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          firstEmptyField.focus();
+        if (emptyFields[0].element) {
+          emptyFields[0].element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          emptyFields[0].element.focus();
         }
       }
     });
