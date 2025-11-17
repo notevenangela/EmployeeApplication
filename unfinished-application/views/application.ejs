@@ -503,16 +503,77 @@
               </div>
 
               <div class="field-group">
-                <label for="schoolCityState">City / State</label>
+                <label for="schoolCity">City</label>
                 <input
-                  id="schoolCityState"
-                  name="schoolCityState"
+                  id="schoolCity"
+                  name="schoolCity"
                   type="text"
-                  maxlength="50"
-                  value="<%= data.schoolCityState || '' %>"
+                  maxlength="30"
+                  value="<%= data.schoolCity || '' %>"
                 />
-                <% if (errors.schoolCityState) { %>
-                  <p class="error"><%= errors.schoolCityState %></p>
+                <% if (errors.schoolCity) { %>
+                  <p class="error"><%= errors.schoolCity %></p>
+                <% } %>
+              </div>
+
+              <div class="field-group">
+                <label for="schoolState">State</label>
+                <select id="schoolState" name="schoolState">
+                  <option value="">Select State</option>
+                  <option value="AL" <%= data.schoolState === "AL" ? "selected" : "" %>>Alabama</option>
+                  <option value="AK" <%= data.schoolState === "AK" ? "selected" : "" %>>Alaska</option>
+                  <option value="AZ" <%= data.schoolState === "AZ" ? "selected" : "" %>>Arizona</option>
+                  <option value="AR" <%= data.schoolState === "AR" ? "selected" : "" %>>Arkansas</option>
+                  <option value="CA" <%= data.schoolState === "CA" ? "selected" : "" %>>California</option>
+                  <option value="CO" <%= data.schoolState === "CO" ? "selected" : "" %>>Colorado</option>
+                  <option value="CT" <%= data.schoolState === "CT" ? "selected" : "" %>>Connecticut</option>
+                  <option value="DE" <%= data.schoolState === "DE" ? "selected" : "" %>>Delaware</option>
+                  <option value="FL" <%= data.schoolState === "FL" ? "selected" : "" %>>Florida</option>
+                  <option value="GA" <%= data.schoolState === "GA" ? "selected" : "" %>>Georgia</option>
+                  <option value="HI" <%= data.schoolState === "HI" ? "selected" : "" %>>Hawaii</option>
+                  <option value="ID" <%= data.schoolState === "ID" ? "selected" : "" %>>Idaho</option>
+                  <option value="IL" <%= data.schoolState === "IL" ? "selected" : "" %>>Illinois</option>
+                  <option value="IN" <%= data.schoolState === "IN" ? "selected" : "" %>>Indiana</option>
+                  <option value="IA" <%= data.schoolState === "IA" ? "selected" : "" %>>Iowa</option>
+                  <option value="KS" <%= data.schoolState === "KS" ? "selected" : "" %>>Kansas</option>
+                  <option value="KY" <%= data.schoolState === "KY" ? "selected" : "" %>>Kentucky</option>
+                  <option value="LA" <%= data.schoolState === "LA" ? "selected" : "" %>>Louisiana</option>
+                  <option value="ME" <%= data.schoolState === "ME" ? "selected" : "" %>>Maine</option>
+                  <option value="MD" <%= data.schoolState === "MD" ? "selected" : "" %>>Maryland</option>
+                  <option value="MA" <%= data.schoolState === "MA" ? "selected" : "" %>>Massachusetts</option>
+                  <option value="MI" <%= data.schoolState === "MI" ? "selected" : "" %>>Michigan</option>
+                  <option value="MN" <%= data.schoolState === "MN" ? "selected" : "" %>>Minnesota</option>
+                  <option value="MS" <%= data.schoolState === "MS" ? "selected" : "" %>>Mississippi</option>
+                  <option value="MO" <%= data.schoolState === "MO" ? "selected" : "" %>>Missouri</option>
+                  <option value="MT" <%= data.schoolState === "MT" ? "selected" : "" %>>Montana</option>
+                  <option value="NE" <%= data.schoolState === "NE" ? "selected" : "" %>>Nebraska</option>
+                  <option value="NV" <%= data.schoolState === "NV" ? "selected" : "" %>>Nevada</option>
+                  <option value="NH" <%= data.schoolState === "NH" ? "selected" : "" %>>New Hampshire</option>
+                  <option value="NJ" <%= data.schoolState === "NJ" ? "selected" : "" %>>New Jersey</option>
+                  <option value="NM" <%= data.schoolState === "NM" ? "selected" : "" %>>New Mexico</option>
+                  <option value="NY" <%= data.schoolState === "NY" ? "selected" : "" %>>New York</option>
+                  <option value="NC" <%= data.schoolState === "NC" ? "selected" : "" %>>North Carolina</option>
+                  <option value="ND" <%= data.schoolState === "ND" ? "selected" : "" %>>North Dakota</option>
+                  <option value="OH" <%= data.schoolState === "OH" ? "selected" : "" %>>Ohio</option>
+                  <option value="OK" <%= data.schoolState === "OK" ? "selected" : "" %>>Oklahoma</option>
+                  <option value="OR" <%= data.schoolState === "OR" ? "selected" : "" %>>Oregon</option>
+                  <option value="PA" <%= data.schoolState === "PA" ? "selected" : "" %>>Pennsylvania</option>
+                  <option value="RI" <%= data.schoolState === "RI" ? "selected" : "" %>>Rhode Island</option>
+                  <option value="SC" <%= data.schoolState === "SC" ? "selected" : "" %>>South Carolina</option>
+                  <option value="SD" <%= data.schoolState === "SD" ? "selected" : "" %>>South Dakota</option>
+                  <option value="TN" <%= data.schoolState === "TN" ? "selected" : "" %>>Tennessee</option>
+                  <option value="TX" <%= data.schoolState === "TX" ? "selected" : "" %>>Texas</option>
+                  <option value="UT" <%= data.schoolState === "UT" ? "selected" : "" %>>Utah</option>
+                  <option value="VT" <%= data.schoolState === "VT" ? "selected" : "" %>>Vermont</option>
+                  <option value="VA" <%= data.schoolState === "VA" ? "selected" : "" %>>Virginia</option>
+                  <option value="WA" <%= data.schoolState === "WA" ? "selected" : "" %>>Washington</option>
+                  <option value="WV" <%= data.schoolState === "WV" ? "selected" : "" %>>West Virginia</option>
+                  <option value="WI" <%= data.schoolState === "WI" ? "selected" : "" %>>Wisconsin</option>
+                  <option value="WY" <%= data.schoolState === "WY" ? "selected" : "" %>>Wyoming</option>
+                  <option value="DC" <%= data.schoolState === "DC" ? "selected" : "" %>>Washington D.C.</option>
+                </select>
+                <% if (errors.schoolState) { %>
+                  <p class="error"><%= errors.schoolState %></p>
                 <% } %>
               </div>
 
@@ -608,16 +669,21 @@
                     <p class="error"><%= errors.workStartDate %></p>
                   <% } %>
                 </div>
-                <div>
+                <div class="end-date-container">
                   <label for="workEndDate">End Date</label>
-                  <input
-                    id="workEndDate"
-                    name="workEndDate"
-                    type="date"
-                    min="1955-01-01"
-                    max="<%= todayISO %>"
-                    value="<%= data.workEndDate || '' %>"
-                  />
+                  <div class="date-input-group">
+                    <input
+                      id="workEndDate"
+                      name="workEndDate"
+                      type="date"
+                      min="1955-01-01"
+                      max="<%= todayISO %>"
+                      value="<%= data.workEndDate || '' %>"
+                    />
+                    <button type="button" class="still-working-btn" data-target="workEndDate">
+                      Currently still working here
+                    </button>
+                  </div>
                   <% if (errors.workEndDate) { %>
                     <p class="error"><%= errors.workEndDate %></p>
                   <% } %>

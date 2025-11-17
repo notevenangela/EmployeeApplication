@@ -85,14 +85,67 @@ document.addEventListener("DOMContentLoaded", () => {
     currentStepIndex = index;
   }
 
+  // Function to check if any field in a section has been filled
+  function isSectionStarted(sectionElement) {
+    const inputs = sectionElement.querySelectorAll('input, select, textarea');
+    return Array.from(inputs).some(input => {
+      if (input.type === 'radio' || input.type === 'checkbox') {
+        return input.checked;
+      }
+      return input.value && input.value.trim() !== '';
+    });
+  }
+
+  // Function to get required fields for a section if it's been started
+  function getSectionRequiredFields(sectionElement, sectionType) {
+    if (!isSectionStarted(sectionElement)) {
+      return []; // Section not started, no validation needed
+    }
+
+    const requiredFieldNames = {
+      education: ['schoolName', 'schoolCity', 'schoolState', 'educationLevel'],
+      work: ['employerName', 'jobTitle', 'workStartDate', 'workEndDate'],
+      reference: ['refName', 'refCompany', 'refPhone']
+    };
+
+    const requiredNames = requiredFieldNames[sectionType] || [];
+    const emptyFields = [];
+
+    requiredNames.forEach(fieldName => {
+      const field = sectionElement.querySelector(`[name="${fieldName}"]`);
+      if (field) {
+        let isEmpty = false;
+        
+        if (field.type === 'radio') {
+          const radioGroup = sectionElement.querySelectorAll(`[name="${fieldName}"]`);
+          const isGroupChecked = Array.from(radioGroup).some(radio => radio.checked);
+          isEmpty = !isGroupChecked;
+        } else if (field.type === 'checkbox') {
+          isEmpty = !field.checked;
+        } else {
+          isEmpty = !field.value || field.value.trim() === '';
+        }
+
+        if (isEmpty) {
+          const label = document.querySelector(`label[for="${field.id}"]`);
+          const fieldLabel = label ? label.textContent.replace(/\*/g, '').trim() : fieldName;
+          emptyFields.push({ name: fieldName, label: fieldLabel, element: field });
+        }
+      }
+    });
+
+    return emptyFields;
+  }
+
   // Function to check if current step has unfilled required fields
   function getCurrentStepRequiredFields() {
     const currentStep = steps[currentStepIndex];
     if (!currentStep) return [];
 
-    const requiredFields = currentStep.querySelectorAll('[required]');
-    const emptyFields = [];
+    let emptyFields = [];
 
+    // Check standard required fields first
+    const requiredFields = currentStep.querySelectorAll('[required]');
     requiredFields.forEach(field => {
       let isEmpty = false;
       
@@ -124,6 +177,25 @@ document.addEventListener("DOMContentLoaded", () => {
         const fieldName = label ? label.textContent.replace(/\*/g, '').trim() : field.name;
         emptyFields.push({ name: field.name, label: fieldName, element: field });
       }
+    });
+
+    // Check section-specific validation (all-or-nothing)
+    const educationSections = currentStep.querySelectorAll('.education-entry');
+    educationSections.forEach(section => {
+      const sectionFields = getSectionRequiredFields(section, 'education');
+      emptyFields = emptyFields.concat(sectionFields);
+    });
+
+    const workSections = currentStep.querySelectorAll('.work-entry');
+    workSections.forEach(section => {
+      const sectionFields = getSectionRequiredFields(section, 'work');
+      emptyFields = emptyFields.concat(sectionFields);
+    });
+
+    const referenceSections = currentStep.querySelectorAll('.reference-entry');
+    referenceSections.forEach(section => {
+      const sectionFields = getSectionRequiredFields(section, 'reference');
+      emptyFields = emptyFields.concat(sectionFields);
     });
 
     return emptyFields;
@@ -463,6 +535,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const clone = firstEntry.cloneNode(true);
       clone.querySelectorAll("input, textarea, select").forEach((el) => {
         el.value = "";
+        el.disabled = false; // Re-enable any disabled inputs
+      });
+
+      // Reset any "still working" buttons in the cloned entry
+      clone.querySelectorAll(".still-working-btn").forEach(btn => {
+        btn.classList.remove('active');
+        btn.textContent = 'Currently still working here';
       });
 
       // Add delete button to cloned entry
@@ -534,6 +613,31 @@ document.addEventListener("DOMContentLoaded", () => {
   // Start on first step
   showStep(0);
 
+  // Handle "still working here" buttons
+  document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('still-working-btn')) {
+      const targetInputId = e.target.dataset.target;
+      const targetInput = document.getElementById(targetInputId);
+      const button = e.target;
+      
+      if (targetInput) {
+        if (button.classList.contains('active')) {
+          // Deactivate - enable the date input and clear it
+          button.classList.remove('active');
+          button.textContent = 'Currently still working here';
+          targetInput.disabled = false;
+          targetInput.value = '';
+        } else {
+          // Activate - disable the date input and set text to "Present"
+          button.classList.add('active');
+          button.textContent = 'Still working here ✓';
+          targetInput.disabled = true;
+          targetInput.value = 'Present'; // This will be handled specially on server
+        }
+      }
+    }
+  });
+
   // Add event listeners to clear error highlighting when users interact with fields
   document.addEventListener('input', (e) => {
     if (e.target.matches('input, select, textarea')) {
@@ -575,11 +679,10 @@ document.addEventListener("DOMContentLoaded", () => {
       // Clear any existing error highlighting
       clearAllFieldErrors();
       
-      // Get all required fields across all steps
-      const requiredFields = applicationForm.querySelectorAll('[required]');
-      const emptyFields = [];
+      let emptyFields = [];
 
-      // Check each required field
+      // Check standard required fields first
+      const requiredFields = applicationForm.querySelectorAll('[required]');
       requiredFields.forEach(field => {
         let isEmpty = false;
         
@@ -611,6 +714,25 @@ document.addEventListener("DOMContentLoaded", () => {
           const fieldName = label ? label.textContent.replace(/\*/g, '').trim() : field.name;
           emptyFields.push({ name: field.name, label: fieldName, element: field });
         }
+      });
+
+      // Check section-specific validation (all-or-nothing) for all sections
+      const educationSections = applicationForm.querySelectorAll('.education-entry');
+      educationSections.forEach(section => {
+        const sectionFields = getSectionRequiredFields(section, 'education');
+        emptyFields = emptyFields.concat(sectionFields);
+      });
+
+      const workSections = applicationForm.querySelectorAll('.work-entry');
+      workSections.forEach(section => {
+        const sectionFields = getSectionRequiredFields(section, 'work');
+        emptyFields = emptyFields.concat(sectionFields);
+      });
+
+      const referenceSections = applicationForm.querySelectorAll('.reference-entry');
+      referenceSections.forEach(section => {
+        const sectionFields = getSectionRequiredFields(section, 'reference');
+        emptyFields = emptyFields.concat(sectionFields);
       });
 
       // If there are empty required fields, prevent submission and show modal

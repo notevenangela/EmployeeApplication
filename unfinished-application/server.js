@@ -147,15 +147,58 @@ app.post("/submit", (req, res) => {
     errors.availableDays = "Please select at least one day you are available.";
   }
 
-  // Education (at least one entry if any text entered)
+  // Education Section - All-or-nothing validation
+  const educationFields = ['schoolName', 'schoolCity', 'schoolState', 'educationLevel'];
+  const educationStarted = educationFields.some(field => data[field] && data[field].trim() !== '');
+  
+  if (educationStarted) {
+    // If any education field is filled, require all core fields
+    if (!data.schoolName || data.schoolName.trim() === '') {
+      errors.schoolName = "School name is required when education section is started.";
+    }
+    if (!data.schoolCity || data.schoolCity.trim() === '') {
+      errors.schoolCity = "School city is required when education section is started.";
+    }
+    if (!data.schoolState || data.schoolState.trim() === '') {
+      errors.schoolState = "School state is required when education section is started.";
+    }
+    if (!data.educationLevel || data.educationLevel.trim() === '') {
+      errors.educationLevel = "Education level is required when education section is started.";
+    }
+  }
+
+  // Validate education field lengths
   if (data.schoolName && data.schoolName.length > 50) {
     errors.schoolName = "School name max 50 characters.";
   }
-  if (data.schoolCityState && data.schoolCityState.length > 50) {
-    errors.schoolCityState = "City/State max 50 characters.";
+  if (data.schoolCity && data.schoolCity.length > 30) {
+    errors.schoolCity = "School city max 30 characters.";
+  }
+  if (data.schoolState && data.schoolState.length > 20) {
+    errors.schoolState = "School state max 20 characters.";
   }
 
-  // Work Experience (main block)
+  // Work Experience Section - All-or-nothing validation
+  const workFields = ['employerName', 'jobTitle', 'workStartDate', 'workEndDate'];
+  const workStarted = workFields.some(field => data[field] && data[field].trim() !== '');
+  
+  if (workStarted) {
+    // If any work field is filled, require the core fields
+    if (!data.employerName || data.employerName.trim() === '') {
+      errors.employerName = "Employer name is required when work experience section is started.";
+    }
+    if (!data.jobTitle || data.jobTitle.trim() === '') {
+      errors.jobTitle = "Job title is required when work experience section is started.";
+    }
+    if (!data.workStartDate || data.workStartDate.trim() === '') {
+      errors.workStartDate = "Start date is required when work experience section is started.";
+    }
+    if (!data.workEndDate || data.workEndDate.trim() === '') {
+      errors.workEndDate = "End date is required when work experience section is started.";
+    }
+  }
+
+  // Validate work experience field lengths and dates
   if (data.employerName && data.employerName.length > 50) {
     errors.employerName = "Employer name max 50 characters.";
   }
@@ -172,14 +215,31 @@ app.post("/submit", (req, res) => {
   if (data.workStartDate && !inEmploymentRange(data.workStartDate)) {
     errors.workStartDate = "Start date must be between 01/01/1955 and today.";
   }
-  if (data.workEndDate && !inEmploymentRange(data.workEndDate)) {
+  if (data.workEndDate && data.workEndDate !== "Present" && !inEmploymentRange(data.workEndDate)) {
     errors.workEndDate = "End date must be between 01/01/1955 and today.";
   }
-  if (data.workStartDate && data.workEndDate && data.workStartDate > data.workEndDate) {
+  if (data.workStartDate && data.workEndDate && data.workEndDate !== "Present" && data.workStartDate > data.workEndDate) {
     errors.workEndDate = "End date must be after start date.";
   }
 
-  // References
+  // References Section - All-or-nothing validation
+  const referenceFields = ['refName', 'refCompany', 'refPhone'];
+  const referenceStarted = referenceFields.some(field => data[field] && data[field].trim() !== '');
+  
+  if (referenceStarted) {
+    // If any reference field is filled, require the core fields
+    if (!data.refName || data.refName.trim() === '') {
+      errors.refName = "Reference name is required when reference section is started.";
+    }
+    if (!data.refCompany || data.refCompany.trim() === '') {
+      errors.refCompany = "Reference company is required when reference section is started.";
+    }
+    if (!data.refPhone || data.refPhone.trim() === '') {
+      errors.refPhone = "Reference phone is required when reference section is started.";
+    }
+  }
+
+  // Validate reference field lengths and formats
   if (data.refName && data.refName.length > 50) {
     errors.refName = "Reference name max 50 characters.";
   }
