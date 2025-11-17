@@ -179,6 +179,34 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
+    // Check for invalid email formats in current step (both required and optional emails)
+    const emailFields = currentStep.querySelectorAll('input[name="email"], input[name="refEmail"]');
+    emailFields.forEach(field => {
+      if (field.value && !isValidEmail(field.value)) {
+        const label = document.querySelector(`label[for="${field.id}"]`);
+        const fieldName = label ? label.textContent.replace(/\*/g, '').trim() : field.name;
+        emptyFields.push({ 
+          name: field.name, 
+          label: `${fieldName} (invalid format)`, 
+          element: field 
+        });
+      }
+    });
+
+    // Check for invalid phone formats in current step (both required and optional phones)
+    const phoneFields = currentStep.querySelectorAll('input[name="phone"], input[name="refPhone"]');
+    phoneFields.forEach(field => {
+      if (field.value && !isValidPhoneNumber(field.value)) {
+        const label = document.querySelector(`label[for="${field.id}"]`);
+        const fieldName = label ? label.textContent.replace(/\*/g, '').trim() : field.name;
+        emptyFields.push({ 
+          name: field.name, 
+          label: `${fieldName} (invalid format)`, 
+          element: field 
+        });
+      }
+    });
+
     // Check section-specific validation (all-or-nothing)
     const educationSections = currentStep.querySelectorAll('.education-entry');
     educationSections.forEach(section => {
@@ -675,6 +703,12 @@ document.addEventListener("DOMContentLoaded", () => {
     return phoneNumber.length === 10;
   }
 
+  // Email validation
+  function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email.trim());
+  }
+
   // Add phone formatting to main phone field and reference phone fields
   document.addEventListener('input', (e) => {
     if (e.target.matches('input[name="phone"], input[name="refPhone"]')) {
@@ -694,12 +728,26 @@ document.addEventListener("DOMContentLoaded", () => {
         clearFieldError(e.target);
       }
     }
+    
+    // Email validation on input
+    if (e.target.matches('input[name="email"], input[name="refEmail"]')) {
+      // Clear errors if email becomes valid
+      if (isValidEmail(e.target.value)) {
+        clearFieldError(e.target);
+      }
+    }
   });
 
-  // Validate phone numbers on blur
+  // Validate phone numbers and emails on blur
   document.addEventListener('blur', (e) => {
     if (e.target.matches('input[name="phone"], input[name="refPhone"]')) {
       if (e.target.value && !isValidPhoneNumber(e.target.value)) {
+        highlightFieldError(e.target);
+      }
+    }
+    
+    if (e.target.matches('input[name="email"], input[name="refEmail"]')) {
+      if (e.target.value && !isValidEmail(e.target.value)) {
         highlightFieldError(e.target);
       }
     }
@@ -767,6 +815,34 @@ document.addEventListener("DOMContentLoaded", () => {
           const label = applicationForm.querySelector(`label[for="${field.id}"]`);
           const fieldName = label ? label.textContent.replace(/\*/g, '').trim() : field.name;
           emptyFields.push({ name: field.name, label: fieldName, element: field });
+        }
+      });
+
+      // Check for invalid email formats (both required and optional emails)
+      const emailFields = applicationForm.querySelectorAll('input[name="email"], input[name="refEmail"]');
+      emailFields.forEach(field => {
+        if (field.value && !isValidEmail(field.value)) {
+          const label = applicationForm.querySelector(`label[for="${field.id}"]`);
+          const fieldName = label ? label.textContent.replace(/\*/g, '').trim() : field.name;
+          emptyFields.push({ 
+            name: field.name, 
+            label: `${fieldName} (invalid format)`, 
+            element: field 
+          });
+        }
+      });
+
+      // Check for invalid phone formats (both required and optional phones)
+      const phoneFields = applicationForm.querySelectorAll('input[name="phone"], input[name="refPhone"]');
+      phoneFields.forEach(field => {
+        if (field.value && !isValidPhoneNumber(field.value)) {
+          const label = applicationForm.querySelector(`label[for="${field.id}"]`);
+          const fieldName = label ? label.textContent.replace(/\*/g, '').trim() : field.name;
+          emptyFields.push({ 
+            name: field.name, 
+            label: `${fieldName} (invalid format)`, 
+            element: field 
+          });
         }
       });
 
