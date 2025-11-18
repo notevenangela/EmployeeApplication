@@ -41,7 +41,7 @@
               id="applicationDate"
               name="applicationDate"
               type="date"
-              value="<%= data.applicationDate || '' %>"
+              value="<%= data.applicationDate || todayISO %>"
               required
             />
             <% if (errors.applicationDate) { %>
