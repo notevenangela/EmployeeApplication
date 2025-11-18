@@ -41,8 +41,7 @@
               id="applicationDate"
               name="applicationDate"
               type="date"
-              max="<%= todayISO %>"
-              value="<%= data.applicationDate || todayISO %>"
+              value="<%= data.applicationDate || '' %>"
               required
             />
             <% if (errors.applicationDate) { %>
@@ -976,9 +975,7 @@
                 id="signatureDate"
                 name="signatureDate"
                 type="date"
-                min="<%= todayISO %>"
-                max="<%= todayISO %>"
-                value="<%= data.signatureDate || todayISO %>"
+                value="<%= data.signatureDate || '' %>"
                 required
               />
               <% if (errors.signatureDate) { %>

@@ -680,7 +680,12 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       if (input.type === 'date') {
         // Skip date fields that are auto-filled with today's date
-        const today = new Date().toISOString().split('T')[0];
+        // Use local date calculation to match server
+        const d = new Date();
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const today = `${year}-${month}-${day}`;
         return input.value && input.value !== today;
       }
       return input.value && input.value.trim() !== '';
