@@ -679,14 +679,8 @@ document.addEventListener("DOMContentLoaded", () => {
         return input.checked;
       }
       if (input.type === 'date') {
-        // Skip date fields that are auto-filled with today's date
-        // Use local date calculation to match server
-        const d = new Date();
-        const year = d.getFullYear();
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
-        const today = `${year}-${month}-${day}`;
-        return input.value && input.value !== today;
+        // Since date fields are no longer auto-filled, any value means user input
+        return input.value && input.value.trim() !== '';
       }
       return input.value && input.value.trim() !== '';
     });
@@ -864,6 +858,9 @@ document.addEventListener("DOMContentLoaded", () => {
   if (applicationForm) {
     const handleFormSubmit = async (e) => {
       console.log('Form submission started');
+      
+      // Clear the modification flag immediately to prevent beforeunload warning
+      formModified = false;
       
       // IMMEDIATELY prevent any form submission
       e.preventDefault();
