@@ -215,7 +215,6 @@ textarea:focus {
   border: 0;
 }
 
-/* Dynamic form entry styling */
 .education-entry,
 .work-entry,
 .reference-entry {
@@ -280,7 +279,6 @@ textarea:focus {
   text-decoration: none;
 }
 
-/* Delete button styling */
 .delete-btn {
   background-color: #dc3545;
   color: white;
@@ -297,7 +295,6 @@ textarea:focus {
   background-color: #c82333;
 }
 
-/* Style for dynamic form entries with delete buttons */
 .education-entry:not(:first-child),
 .work-entry:not(:first-child),
 .reference-entry:not(:first-child) {
@@ -309,7 +306,6 @@ textarea:focus {
   position: relative;
 }
 
-/* Custom Modal for Navigation Warning */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -500,7 +496,6 @@ textarea:focus {
   color: #7f1d1d;
 }
 
-/* Field highlighting for validation errors */
 .field-error {
   border: 2px solid #dc2626 !important;
   background-color: #fef2f2 !important;
@@ -514,7 +509,6 @@ textarea:focus {
   box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2) !important;
 }
 
-/* Animation for field error highlighting */
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
   25% { transform: translateX(-5px); }
@@ -525,7 +519,6 @@ textarea:focus {
   animation: shake 0.5s ease-in-out;
 }
 
-/* Error highlighting for radio button groups */
 .radio-group.field-error {
   background-color: #fef2f2;
   border: 2px solid #dc2626;
@@ -534,7 +527,6 @@ textarea:focus {
   margin: 0.5rem 0;
 }
 
-/* Error highlighting for checkbox groups */
 .checkbox-group.field-error {
   background-color: #fef2f2;
   border: 2px solid #dc2626;
@@ -543,7 +535,6 @@ textarea:focus {
   margin: 0.25rem 0;
 }
 
-/* Question label styling for radio groups */
 .question-label {
   font-weight: 600 !important;
   font-size: 1rem !important;
@@ -552,13 +543,11 @@ textarea:focus {
   display: block !important;
 }
 
-/* Ensure question labels are distinct from option labels */
 .radio-group label {
   font-weight: normal;
   font-size: 0.95rem;
 }
 
-/* Still working button styling */
 .end-date-container {
   position: relative;
 }
