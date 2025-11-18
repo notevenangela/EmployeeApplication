@@ -976,8 +976,9 @@
                 id="signatureDate"
                 name="signatureDate"
                 type="date"
+                min="<%= todayISO %>"
                 max="<%= todayISO %>"
-                value="<%= data.signatureDate || '' %>"
+                value="<%= data.signatureDate || todayISO %>"
                 required
               />
               <% if (errors.signatureDate) { %>

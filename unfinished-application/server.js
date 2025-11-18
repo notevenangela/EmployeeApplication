@@ -48,15 +48,29 @@ function inEmploymentRange(dateStr) {
   return dateStr >= "1955-01-01" && dateStr <= todayISO();
 }
 
-// GET form
+//  GET form
 app.get("/", (req, res) => {
+  // Check if this is a redirect after successful submission
+  let success = null;
+  if (req.query.submitted === 'true') {
+    success = {
+      message: "Your application has been successfully submitted!",
+      position: req.query.position || 'N/A'
+    };
+  }
+
   res.render("application", {
     errors: {},
     data: {},
     todayISO: todayISO(),
     futureMinDate: isoOneDayFromToday(),
-    success: null
+    success: success
   });
+});
+
+// Handle accidental GET requests to /submit (redirect to main page)
+app.get("/submit", (req, res) => {
+  res.redirect("/");
 });
 
 // POST submission
@@ -290,17 +304,8 @@ app.post("/submit", (req, res) => {
 
   console.log('Form validation passed, showing success');
   // At this point you would save to a database; for the assignment we just show success.
-  // Instead of rendering a new page, we'll redirect back with a success flag
-  res.render("application", {
-    errors: {},
-    data: {},
-    todayISO: todayISO(),
-    futureMinDate: isoOneDayFromToday(),
-    success: {
-      message: "Your application has been successfully submitted!",
-      position: data.positionApplied || 'N/A'
-    }
-  });
+  // Use redirect to prevent duplicate submissions on refresh (Post-Redirect-Get pattern)
+  res.redirect(`/?submitted=true&position=${encodeURIComponent(data.positionApplied || 'N/A')}`);
 });
 
 app.listen(PORT, () => {

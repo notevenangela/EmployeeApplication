@@ -665,6 +665,58 @@ document.addEventListener("DOMContentLoaded", () => {
   // Start on first step
   showStep(0);
 
+  // Track if form has been modified to warn before page unload
+  let formModified = false;
+
+  // Function to check if form has any data
+  function hasFormData() {
+    const form = document.querySelector('form');
+    if (!form) return false;
+
+    const inputs = form.querySelectorAll('input, select, textarea');
+    return Array.from(inputs).some(input => {
+      if (input.type === 'radio' || input.type === 'checkbox') {
+        return input.checked;
+      }
+      if (input.type === 'date') {
+        // Skip date fields that are auto-filled with today's date
+        const today = new Date().toISOString().split('T')[0];
+        return input.value && input.value !== today;
+      }
+      return input.value && input.value.trim() !== '';
+    });
+  }
+
+  // Add event listeners to detect form modifications
+  document.addEventListener('input', (e) => {
+    if (e.target.matches('form input, form select, form textarea')) {
+      formModified = true;
+    }
+  });
+
+  document.addEventListener('change', (e) => {
+    if (e.target.matches('form input, form select, form textarea')) {
+      formModified = true;
+    }
+  });
+
+  // Warn before page unload if form has been modified
+  window.addEventListener('beforeunload', (e) => {
+    if (formModified && hasFormData()) {
+      const message = 'You have unsaved changes in your application form. If you refresh or leave this page, all your progress will be lost. Are you sure you want to continue?';
+      e.preventDefault();
+      e.returnValue = message; // For older browsers
+      return message;
+    }
+  });
+
+  // Clear the warning flag when form is successfully submitted
+  document.addEventListener('submit', (e) => {
+    if (e.target.matches('form')) {
+      formModified = false;
+    }
+  });
+
   // Handle "still working here" buttons
   document.addEventListener('click', (e) => {
     if (e.target.classList.contains('still-working-btn')) {
@@ -790,6 +842,10 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log('Showing success modal...');
       showSuccessModal(message, position).then(() => {
         console.log('Success modal closed');
+        // Clear the URL parameters to prevent showing success message again on refresh
+        if (window.history && window.history.replaceState) {
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
         // Stay on the current page instead of redirecting
         // User can manually navigate away if they want to submit another application
       });
