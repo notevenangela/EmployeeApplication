@@ -4,16 +4,13 @@ const path = require("path");
 const app = express();
 const PORT = 3000;
 
-// Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-// Helpers
 function todayISO() {
   const d = new Date();
-  // Get local date components to avoid timezone issues
   const year = d.getFullYear();
   const month = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
@@ -33,7 +30,6 @@ function isValidEmail(email) {
 
 function isPhone(phone) {
   if (!phone) return false;
-  // Remove all non-digits and check if we have exactly 10 digits
   const digits = phone.replace(/\D/g, '');
   return digits.length === 10;
 }
@@ -54,7 +50,6 @@ function inEmploymentRange(dateStr) {
 
 //  GET form
 app.get("/", (req, res) => {
-  // Check if this is a redirect after successful submission
   let success = null;
   if (req.query.submitted === 'true') {
     success = {
@@ -72,23 +67,19 @@ app.get("/", (req, res) => {
   });
 });
 
-// Handle accidental GET requests to /submit (redirect to main page)
 app.get("/submit", (req, res) => {
   res.redirect("/");
 });
 
-// POST submission
 app.post("/submit", (req, res) => {
   console.log('Form submitted with data:', req.body);
   const data = req.body;
   const errors = {};
 
-  // Application Date
   if (!data.applicationDate) {
     errors.applicationDate = "Application date is required.";
   }
 
-  // Applicant Information
   if (!data.firstName || !isLettersOnly(data.firstName) || data.firstName.length > 64) {
     errors.firstName = "First name is required, letters only, max 64 characters.";
   }
@@ -129,7 +120,6 @@ app.post("/submit", (req, res) => {
     errors.email = "Please enter a valid email address (max 64 characters).";
   }
 
-  // Age Verification
   if (!data.ageVerification) {
     errors.ageVerification = "Please confirm if you are at least 18 years old.";
   }
@@ -142,25 +132,18 @@ app.post("/submit", (req, res) => {
     errors.positionApplied = "Please select a position.";
   }
 
-  // Work Authorization (CEO Question 11)
   if (!data.workAuthorized) {
     errors.workAuthorized = "Please indicate if you are authorized to work in the U.S.";
   }
 
-  // Previous Employment (CEO Question 9)
   if (!data.previousEmployee) {
     errors.previousEmployee = "Please indicate if you have previously worked for or volunteered with this company.";
   }
 
-  // Sponsorship requirement (required field)
   if (!data.requiresSponsorship) {
     errors.requiresSponsorship = "Please indicate if you will require sponsorship for employment visa status.";
   }
 
-  // Veteran status (optional - no validation needed since it's voluntary)
-  // Disability status (optional - no validation needed since it's voluntary)
-
-  // Availability
   if (!data.employmentType) {
     errors.employmentType = "Please select employment type.";
   }
@@ -173,12 +156,10 @@ app.post("/submit", (req, res) => {
     errors.availableDays = "Please select at least one day you are available.";
   }
 
-  // Education Section - All-or-nothing validation
   const educationFields = ['schoolName', 'schoolCity', 'schoolState', 'educationLevel'];
   const educationStarted = educationFields.some(field => data[field] && data[field].trim() !== '');
   
   if (educationStarted) {
-    // If any education field is filled, require all core fields
     if (!data.schoolName || data.schoolName.trim() === '') {
       errors.schoolName = "School name is required when education section is started.";
     }
@@ -193,7 +174,6 @@ app.post("/submit", (req, res) => {
     }
   }
 
-  // Validate education field lengths
   if (data.schoolName && data.schoolName.length > 50) {
     errors.schoolName = "School name max 50 characters.";
   }
@@ -204,12 +184,10 @@ app.post("/submit", (req, res) => {
     errors.schoolState = "School state max 20 characters.";
   }
 
-  // Work Experience Section - All-or-nothing validation
   const workFields = ['employerName', 'jobTitle', 'workStartDate', 'workEndDate'];
   const workStarted = workFields.some(field => data[field] && data[field].trim() !== '');
   
   if (workStarted) {
-    // If any work field is filled, require the core fields
     if (!data.employerName || data.employerName.trim() === '') {
       errors.employerName = "Employer name is required when work experience section is started.";
     }
@@ -224,7 +202,6 @@ app.post("/submit", (req, res) => {
     }
   }
 
-  // Validate work experience field lengths and dates
   if (data.employerName && data.employerName.length > 50) {
     errors.employerName = "Employer name max 50 characters.";
   }
@@ -248,12 +225,10 @@ app.post("/submit", (req, res) => {
     errors.workEndDate = "End date must be after start date.";
   }
 
-  // References Section - All-or-nothing validation
   const referenceFields = ['refName', 'refCompany', 'refPhone'];
   const referenceStarted = referenceFields.some(field => data[field] && data[field].trim() !== '');
   
   if (referenceStarted) {
-    // If any reference field is filled, require the core fields
     if (!data.refName || data.refName.trim() === '') {
       errors.refName = "Reference name is required when reference section is started.";
     }
@@ -264,8 +239,6 @@ app.post("/submit", (req, res) => {
       errors.refPhone = "Reference phone is required when reference section is started.";
     }
   }
-
-  // Validate reference field lengths and formats
   if (data.refName && data.refName.length > 50) {
     errors.refName = "Reference name max 50 characters.";
   }
@@ -279,12 +252,10 @@ app.post("/submit", (req, res) => {
     errors.refEmail = "Reference email must be valid.";
   }
 
-  // Additional Skills
   if (data.skills && data.skills.length > 200) {
     errors.skills = "Skills and experience max 200 characters.";
   }
 
-  // Acknowledgment
   if (!data.acknowledge) {
     errors.acknowledge = "You must acknowledge and sign the application.";
   }
@@ -307,8 +278,6 @@ app.post("/submit", (req, res) => {
   }
 
   console.log('Form validation passed, showing success');
-  // At this point you would save to a database; for the assignment we just show success.
-  // Use redirect to prevent duplicate submissions on refresh (Post-Redirect-Get pattern)
   res.redirect(`/?submitted=true&position=${encodeURIComponent(data.positionApplied || 'N/A')}`);
 });
 
